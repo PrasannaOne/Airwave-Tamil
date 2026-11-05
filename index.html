@@ -1,0 +1,1144 @@
+<!--
+AIRWAVE | EASY-EDIT SOURCE GUIDE
+Made by Prasanna with ChatGPT.
+
+QUICK EDIT MAP
+1. BRAND + PAGE WORDING: search for "Airwave", "THE WORLD ON AIR", or "Your lil corner of radio".
+2. THEME COLOURS: edit the "AIRWAVE DESIGN SETTINGS" block near the end of <style>.
+3. BUTTONS + SPACING: edit .nav, .filters, .smallbtn, .iconbtn, and .player button in that same block.
+4. STATION CARDS: find the "03 · STATION CARD UI" section in JavaScript.
+5. SEARCH + FILTERS: find "04 · SEARCH, FILTERS, SORTING + RESULTS".
+6. PLAYER: find "05 · RADIO PLAYER + LISTENING HISTORY".
+7. SURPRISE ME: find "06 · SURPRISE ME".
+8. IMPORT / EXPORT: find "07 · IMPORT / EXPORT".
+9. SETTINGS + THEMES: find the settings markup and "02 · HELPERS + SAVED PREFERENCES".
+10. STATION DATA: the inert "airwave-catalogue" data block near the end of the page is the bundled compressed catalogue.
+    Do not edit that block manually.
+11. STARTUP: find "09 · LOAD CATALOGUE". It loads the catalogue progressively and limits genre choices.
+
+FEATURES
+- Tamil-language radio catalogue; offline catalogue browsing
+- Search across the Tamil-only station catalogue
+- Explore, favourites, recent stations, filtered Surprise Me
+- Persistent mini-player and saved listening history
+- Five themes and complete English/Tamil interface
+- Import/export favourites and hidden stations as JSON
+
+Importing an Airwave backup merges favourites and hidden stations only.
+It never replaces or modifies the bundled Tamil station catalogue.
+-->
+<!doctype html>
+<html lang="ta">
+<head>
+<meta charset="utf-8"><meta name="description" content="Discover Tamil radio stations from across the world with Airwave Tamil."><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d14"><meta name="author" content="Prasanna"><title>Airwave · Internet Radio</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d14;--surface:#141a27;--surface2:#1c2434;--line:#29344a;--text:#f5f6fc;--muted:#9ba7bd;--accent:#a99bff;--mint:#70e4d0;--pink:#ff8eae;--shadow:0 15px 45px #0004}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -12%,#403675 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding-bottom:100px}
+body.light{color-scheme:light;--bg:#f3f5fb;--surface:#fff;--surface2:#eef1f8;--line:#dce1ed;--text:#171b2b;--muted:#68738a;--accent:#6756d9;--mint:#008f83;--pink:#d84978;--shadow:0 15px 45px #27314b18;background:radial-gradient(ellipse at 80% -12%,#ddd7ff 0,transparent 35%),var(--bg)}
+body.amoled{--bg:#000;--surface:#090909;--surface2:#141414;--line:#292929;background:#000}
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:1000px;margin:auto;padding:18px 16px 25px}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 22px}.brand{display:flex;align-items:center;gap:11px}.mark{width:44px;height:44px;border-radius:15px;background:linear-gradient(140deg,var(--accent),var(--mint));display:grid;place-items:center;color:#10131b;font-size:23px;box-shadow:0 8px 25px #8d7dff44}.brand h1{font-size:22px;letter-spacing:-.8px;margin:0;font-weight:850}.brand small{color:var(--muted);font-size:11px}.head-actions{display:flex;gap:7px}.iconbtn{height:48px;min-width:48px;padding:0 11px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);display:grid;place-items:center;font-size:16px}
+.hero{margin-bottom:19px}.tagline-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.tagline-tags span{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:7px 11px;border-radius:30px;font-size:11px}.eyebrow{font-size:10px;font-weight:850;letter-spacing:1.9px;color:var(--mint)}.hero h2{font-size:clamp(29px,6vw,43px);letter-spacing:-1.8px;line-height:1.04;margin:8px 0}.hero p{color:var(--muted);margin:0;max-width:600px;font-size:13px}
+.controls{position:sticky;top:0;z-index:6;padding:9px 0 12px;background:linear-gradient(var(--bg) 82%,transparent);backdrop-filter:blur(12px)}.search{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid var(--line);background:var(--surface);border-radius:15px;box-shadow:var(--shadow)}.search span{font-size:20px;color:var(--muted)}#query{width:100%;height:100%;border:0;outline:0;background:transparent;color:var(--text)}#query::placeholder{color:var(--muted)}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.filters select,.sort{width:100%;min-width:0;min-height:48px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:12px}
+.nav{display:flex;align-items:center;gap:7px;margin:13px 0 16px;overflow:auto}.nav button{min-height:48px;padding:11px 17px;white-space:nowrap;border:1px solid var(--line);border-radius:30px;background:var(--surface);color:var(--muted);padding:9px 14px;font-size:12px}.nav button.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:800}
+.rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 1px 11px}.rowhead h3{font-size:16px;margin:0}.rowhead small{color:var(--muted);font-size:11px}.sort{width:auto;max-width:160px}
+.stationlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.station{display:flex;align-items:center;gap:10px;min-width:0;padding:11px;background:var(--surface);border:1px solid var(--line);border-radius:16px;transition:border .15s}.station:active{transform:scale(.99)}.station:hover{border-color:#9385ed}.logo{width:43px;height:43px;flex:none;border-radius:13px;background:var(--surface2);object-fit:cover;display:grid;place-items:center;color:var(--accent);font-size:18px}.info{flex:1;min-width:0}.name{font-weight:750;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.actions{display:flex;gap:5px}.smallbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);display:grid;place-items:center}.smallbtn.play{background:var(--accent);color:#111;border-color:transparent}.smallbtn.liked{color:var(--pink)}
+.empty{grid-column:1/-1;padding:36px 15px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:16px}.more{width:100%;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text)}
+.player{position:fixed;bottom:0;left:0;right:0;z-index:8;padding:10px 15px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line)}.playerin{max-width:970px;margin:auto;display:flex;align-items:center;gap:11px}.cover{width:42px;height:42px;border-radius:13px;background:linear-gradient(140deg,var(--accent),var(--mint));display:grid;place-items:center;color:#111;font-size:19px;flex:none}.track{flex:1;min-width:0}.track b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track small{font-size:10px;color:var(--muted)}.player button{height:48px;width:48px;border:0;border-radius:13px;background:var(--accent);color:#111;font-size:16px}.player button.secondary{background:var(--surface2);border:1px solid var(--line);color:var(--text)}
+.modalbg{position:fixed;inset:0;background:#000a;z-index:20;display:none;align-items:center;justify-content:center;padding:17px}.modal{width:min(430px,100%);background:var(--surface);border:1px solid var(--line);border-radius:21px;padding:19px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}.modal h3{margin:0 0 5px;font-size:18px}.modal p{margin:0 0 14px;color:var(--muted);font-size:12px}.setting{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.setting label{font-size:13px}.setting select{max-width:180px;padding:9px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text)}.modalactions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.action{border:0;border-radius:11px;background:var(--accent);color:#111;padding:10px 14px;font-weight:750}.action.secondary{background:var(--surface2);border:1px solid var(--line);color:var(--text)}.toast{position:fixed;z-index:30;bottom:83px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:12px;display:none;max-width:90%}
+@media(max-width:650px){.app{padding:14px 12px 22px}.stationlist{grid-template-columns:1fr}.hero h2{font-size:34px}.filters{grid-template-columns:1fr 1fr}.filters select:last-child{grid-column:1/-1}.header{margin-bottom:19px}}
+
+/* ==========================================================
+   AIRWAVE DESIGN SETTINGS
+   Edit this section to adjust the look without touching logic.
+   ========================================================== */
+:root {
+  --bg: #10111a;
+  --surface: #181a27;
+  --surface2: #202338;
+  --line: #30354a;
+  --text: #f3f3fa;
+  --muted: #a1a8bd;
+  --accent: #a99bff;
+  --mint: #78d9cf;
+  --pink: #e6a2c2;
+  --shadow: 0 12px 32px #0003;
+}
+body {
+  background: var(--bg);
+}
+body[data-theme="midnight"] {
+  --bg: #10111a;
+  --surface: #181a27;
+  --surface2: #202338;
+  --line: #30354a;
+  --text: #f3f3fa;
+  --muted: #a1a8bd;
+  --accent: #a99bff;
+  --mint: #78d9cf;
+  --pink: #e6a2c2;
+}
+body[data-theme="amoled"] {
+  --bg: #000000;
+  --surface: #090909;
+  --surface2: #141414;
+  --line: #292929;
+  --text: #f5f5f7;
+  --muted: #a0a0aa;
+  --accent: #ad9cff;
+  --mint: #72d9cd;
+  --pink: #ef9abd;
+}
+body[data-theme="ocean"] {
+  --bg: #0d1721;
+  --surface: #14212d;
+  --surface2: #1b2b39;
+  --line: #2b4050;
+  --text: #edf4f8;
+  --muted: #9fb2bf;
+  --accent: #8ebce8;
+  --mint: #75d5c7;
+  --pink: #e9a6c5;
+}
+body[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f5fa;
+  --surface: #ffffff;
+  --surface2: #edf0f7;
+  --line: #dfe3ed;
+  --text: #1c2130;
+  --muted: #69748a;
+  --accent: #786bc9;
+  --mint: #168f83;
+  --pink: #c65d87;
+  --shadow: 0 12px 32px #25304a12;
+}
+body[data-theme="forest"] {
+  --bg: #101913;
+  --surface: #17231b;
+  --surface2: #203026;
+  --line: #304538;
+  --text: #edf4ed;
+  --muted: #a4b7a7;
+  --accent: #adc58d;
+  --mint: #79c9a4;
+  --pink: #dfa0ad;
+}
+body[data-theme="light"] {
+  background: var(--bg);
+}
+body[data-theme="midnight"],
+body[data-theme="amoled"],
+body[data-theme="ocean"],
+body[data-theme="forest"] {
+  color-scheme: dark;
+  background: var(--bg);
+}
+.app {
+  max-width: 960px;
+  padding-top: 20px;
+}
+.header {
+  margin-bottom: 26px;
+}
+.brand h1 {
+  font-size: 25px;
+}
+.hero {
+  margin-bottom: 24px;
+}
+.hero .eyebrow {
+  margin-bottom: 8px;
+}
+.hero h2 {
+  margin: 0 0 7px;
+  font-size: clamp(29px, 5.7vw, 42px);
+}
+.hero p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.controls {
+  position: relative;
+  top: auto;
+  padding: 0;
+  margin-bottom: 17px;
+  background: transparent;
+  backdrop-filter: none;
+}
+.search {
+  height: 54px;
+  box-shadow: none;
+}
+.filters {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.filters select {
+  min-height: 49px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+.filters select:last-child {
+  grid-column: 1 / -1;
+}
+.filter-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 7px;
+}
+.reset {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 5px 2px;
+  font-size: 11px;
+}
+.reset:hover {
+  color: var(--accent);
+}
+.nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 17px 0 20px;
+  overflow: visible;
+}
+.nav button {
+  min-width: 0;
+  min-height: 47px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  text-align: center;
+}
+.rowhead {
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+.sort {
+  min-height: 46px;
+  padding: 10px 12px;
+}
+.stationlist {
+  gap: 11px;
+}
+.station {
+  padding: 12px;
+  gap: 12px;
+}
+.smallbtn {
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+}
+.iconbtn {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+}
+.player button {
+  width: 46px;
+  height: 46px;
+}
+.player {
+  background: var(--surface);
+}
+.modal {
+  width: min(460px, 100%);
+}
+.setting {
+  gap: 14px;
+}
+.setting select {
+  min-height: 42px;
+}
+.about-credit {
+  margin-top: 16px;
+  padding: 15px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface2);
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+.about-credit strong:first-of-type {
+  color: var(--accent);
+}
+.about-credit span {
+  color: var(--pink);
+}
+.about-note,
+.import-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+@media (max-width: 650px) {
+  .app {
+    padding: 16px 14px 24px;
+  }
+  .header {
+    margin-bottom: 24px;
+  }
+  .hero {
+    margin-bottom: 23px;
+  }
+  .filters {
+    gap: 11px;
+  }
+  .nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 17px;
+  }
+  .nav button {
+    min-height: 48px;
+  }
+  .stationlist {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* SETTINGS PANEL: fixed, fully visible, and comfortably tappable */
+.modalbg {
+  position: fixed;
+  inset: 0;
+  padding: 12px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  width: min(430px, 100%);
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: 17px 18px;
+  border-radius: 20px;
+}
+.modal h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.modal > p {
+  margin: 0 0 9px;
+}
+.setting {
+  padding: 8px 0;
+  min-height: 43px;
+}
+.setting select {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+.setting .action,
+.setting button {
+  min-height: 40px;
+  padding: 8px 12px;
+}
+.about-credit {
+  margin-top: 10px;
+  padding: 11px 10px;
+}
+.about-note {
+  margin-top: 9px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.modalactions {
+  margin-top: 10px;
+}
+.modalactions .action {
+  min-height: 42px;
+  min-width: 82px;
+}
+
+.loading-pulse{display:inline-block;animation:airwavePulse 1.25s ease-in-out infinite}@keyframes airwavePulse{50%{opacity:.45}}
+
+.ta-only-label{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--accent);font-size:12px;font-weight:700;white-space:nowrap}
+.actions{gap:4px}
+.actions .smallbtn{width:38px;height:40px}
+@media(max-width:380px){.ta-only-label{font-size:10px;padding:0 8px}.actions .smallbtn{width:34px}}
+
+/* AIRWAVE TAMIL · CLEANER APP SHELL */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: -16px -14px 22px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.filters, .filter-tools { display: none !important; }
+.controls { margin-bottom: 15px; }
+.hero { margin-bottom: 20px; }
+.hero h2 { letter-spacing: -1.5px; }
+.search { border-radius: 17px; }
+.nav { margin-top: 14px; margin-bottom: 19px; }
+.nav button { border-radius: 15px; font-weight: 600; }
+.rowhead { align-items: center; }
+.station { border-radius: 17px; }
+.player { padding-top: 11px; padding-bottom: calc(11px + env(safe-area-inset-bottom)); }
+.app { padding-bottom: 112px; }
+@media (min-width: 651px) {
+  .header { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+}
+@media (max-width: 650px) {
+  .header { margin: -16px -14px 20px; }
+  .hero { margin-bottom: 19px; }
+  .hero h2 { font-size: clamp(30px, 8vw, 36px); }
+  .nav { gap: 8px; }
+  .nav button { min-height: 50px; }
+}
+</style></head>
+<body>
+<div class="app">
+<header class="header"><div class="brand"><div class="mark">〰</div><div><h1>Airwave<span style="color:var(--accent)">.</span></h1></div></div><div class="head-actions"><button class="iconbtn" id="settings" title="Settings" aria-label="Settings">⚙</button><button class="iconbtn" id="import" title="Import backup" aria-label="Import backup">＋</button><button class="iconbtn" id="export" title="Export backup" aria-label="Export backup">⇧</button></div></header>
+<section class="hero"><h2 data-i18n="heroTitle">Find your frequency.</h2><p data-i18n="heroSub">Your lil corner of radio.</p></section>
+<section class="controls">
+<label class="search"><span>⌕</span><input id="query" type="search" placeholder="Search Tamil stations, artists, genres…" autocomplete="off"></label>
+<div class="filters" aria-hidden="true"><select id="country"><option value="" data-i18n="allCountries">All countries</option></select><select id="genre"><option value="" data-i18n="allGenres">All genres</option></select></div><div class="filter-tools"><button id="reset" class="reset" data-i18n="reset">Reset filters</button></div>
+</section>
+<nav class="nav" aria-label="Station views"><button class="active" data-view="all" data-i18n="explore">Explore</button><button data-view="favs" data-i18n="favourites">♡ Favourites</button><button data-view="recent" data-i18n="recent">◷ Recent</button><button id="surprise" data-i18n="surprise">✧ Surprise me</button></nav>
+<div class="rowhead"><div><h3 id="heading">Explore stations</h3><small id="count" data-i18n="loading">Loading Tamil stations…</small></div><select class="sort" id="sort"><option value="name" data-i18n="sortName">Name: A–Z</option><option value="country" data-i18n="sortCountry">Country</option><option value="random" data-i18n="sortRandom">Shuffle results</option></select></div>
+<div class="stationlist" id="list"><div class="empty" id="loadingState"><span class="loading-pulse" data-i18n="loading">Preparing your Tamil radio catalogue…</span></div></div><button class="more" id="more" hidden>Load more</button>
+</div>
+<div class="player"><div class="playerin"><div class="cover">♫</div><div class="track"><b id="trackname" data-i18n="nothingPlaying">Nothing playing yet</b><small id="trackstate" data-i18n="chooseStation">Choose a station to start listening</small></div><button class="secondary" id="playerfav" disabled>♡</button><button id="toggle" disabled>▶</button></div><audio id="audio" preload="none"></audio></div>
+<div class="modalbg" id="settingsbg"><div class="modal"><h3 data-i18n="settingsTitle">Airwave settings</h3><p data-i18n="settingsSub">Keep things just the way you like them.</p>
+<div class="setting"><label for="theme" data-i18n="appearance">Appearance</label><select id="theme"><option value="midnight" data-i18n="themeMidnight">Midnight purple</option><option value="amoled" data-i18n="themeAmoled">AMOLED black</option><option value="ocean" data-i18n="themeOcean">Ocean</option><option value="light" data-i18n="themeLight">Light</option><option value="forest" data-i18n="themeForest">Forest</option></select></div>
+<div class="setting"><label for="uilang" data-i18n="interfaceLanguage">Interface language</label><select id="uilang"><option value="en">English</option><option value="ta">தமிழ்</option></select></div>
+<div class="setting"><label data-i18n="stationCatalogue">Station catalogue</label><span id="dbinfo" style="font-size:11px;color:var(--muted)">Bundled database</span></div>
+<div class="setting"><label data-i18n="importBackup">Import backup</label><button class="action secondary" id="import2" data-i18n="importJson">Import JSON</button></div>
+<div class="setting"><label data-i18n="exportBackup">Export backup</label><button class="action secondary" id="export2" data-i18n="export">Export</button></div>
+<div class="setting"><label data-i18n="hiddenStations">Stations you hid</label><button class="action secondary" id="hiddenList" data-i18n="manageHidden">Manage</button></div>
+<div class="setting"><label data-i18n="clearSaved">Clear saved data</label><button class="action secondary" id="clear" data-i18n="clear">Clear</button></div>
+<div class="about-credit">Made by <strong>Prasanna</strong> <span>❤️</span> with <strong>ChatGPT</strong></div>
+<div class="about-note" data-i18n="aboutNote">Tamil radio, gathered in one place.<br>Station catalogue powered by Radio Browser data.</div>
+<div class="modalactions"><button class="action" id="close" data-i18n="done">Done</button></div></div></div>
+<input id="file" type="file" accept=".json,application/json" hidden><div class="toast" id="toast"></div>
+<script type="application/octet-stream" id="airwave-catalogue">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</script>
+<script>
+
+/* ==========================================================
+   AIRWAVE JAVASCRIPT
+   Keep the sections below in place when editing features.
+   ========================================================== */
+
+/* 01 · BUNDLED STATION CATALOGUE
+   This long gzip/base64 value is the station snapshot.
+   Leave it unchanged unless replacing the catalogue itself.
+*/
+let DB = document.getElementById("airwave-catalogue")?.textContent.trim() || "";
+document.getElementById("airwave-catalogue")?.remove();
+
+/* 02 · APP STATE + SMALL HELPERS */
+const $ = (id) => document.getElementById(id);
+const audio = $("audio");
+const PAGE_SIZE = 60;
+const stationCollator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+const countryNameCache = new Map();
+const languageNameCache = new Map();
+
+function safeStorageGet(key, fallback = null) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Browsing and streaming remain available when storage is blocked.
+  }
+}
+
+let stations = [];
+let importedFavouriteStations = loadSavedArray("airwave-imported-favs").filter(isTamilStation);
+let hiddenStationIds = new Set(loadSavedArray("airwave-hidden-ids"));
+let hiddenStationRecords = loadSavedArray("airwave-hidden-records").filter(isTamilStation);
+let filtered = [];
+let shown = 0;
+let view = "all";
+let current = null;
+let favs = new Set(loadSavedArray("airwave-favs"));
+let recent = loadSavedArray("airwave-recent");
+let ui = safeStorageGet("airwave-language", "ta") || "ta";
+const TEXT = {
+  en: {loading:"Preparing your Tamil radio catalogue…",allCountries:"All countries",allGenres:"All genres",tamilOnly:"தமிழ் வானொலிகள் · Tamil radio",heroTitle:"Find your frequency.",heroSub:"Your lil corner of radio.",reset:"Reset filters",explore:"Explore",favourites:"♡ Favourites",recent:"◷ Recent",surprise:"✧ Surprise me",sortName:"Name: A–Z",sortCountry:"Country",sortRandom:"Shuffle results",settingsTitle:"Airwave Tamil settings",settingsSub:"Your Tamil radio, your way.",appearance:"Appearance",themeMidnight:"Midnight purple",themeAmoled:"AMOLED black",themeOcean:"Ocean",themeLight:"Light",themeForest:"Forest",interfaceLanguage:"Interface language",stationCatalogue:"Station catalogue",importBackup:"Import backup",importJson:"Import JSON",exportBackup:"Export backup",export:"Export",hiddenStations:"Stations you hid",manageHidden:"Manage",clearSaved:"Clear saved data",clear:"Clear",aboutNote:"Tamil radio, gathered in one place.<br>Station catalogue powered by Radio Browser data.",done:"Done",hidden:"⊘ Hidden",headingAll:"Explore Tamil stations",headingFavs:"Your favourites",headingRecent:"Recently played",headingHidden:"Hidden stations",noStations:"No stations found. Try changing your search or filters.",noHidden:"No hidden stations.",loadMore:"Load more",connecting:"Connecting…",playing:"Now playing",paused:"Paused",streamError:"Stream unavailable or unsupported",chooseStation:"Choose a station to start listening",nothingPlaying:"Nothing playing yet",search:"Search Tamil stations, artists, genres…",hide:"Hide station",restore:"Restore station",favourite:"Toggle favourite",hideConfirm:"Hide this station from your catalogue?",restored:"Station restored.",hiddenToast:"Station hidden from your catalogue.",backupExported:"Airwave backup exported.",backupImported:"Backup merged successfully.",importError:"Could not import this backup.",clearConfirm:"Clear favourites, hidden stations and listening history?",cleared:"Saved data cleared.",surpriseEmpty:"No playable Tamil stations match your current filters.",noStream:"This station has no stream URL.",surprisePick:"Surprise pick: "},
+  ta: {loading:"தமிழ் வானொலி பட்டியலைத் தயாரிக்கிறது…",allCountries:"அனைத்து நாடுகளும்",allGenres:"அனைத்து வகைகளும்",tamilOnly:"தமிழ் வானொலிகள்",heroTitle:"உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.",heroSub:"உங்களுக்கான சிறிய வானொலி உலகம்.",reset:"வடிப்பான்களை மீட்டமை",explore:"ஆராயுங்கள்",favourites:"♡ விருப்பங்கள்",recent:"◷ சமீபத்தியவை",surprise:"✧ ஆச்சரியத் தேர்வு",sortName:"பெயர்: அ–ஔ",sortCountry:"நாடு",sortRandom:"கலக்கி வரிசைப்படுத்து",settingsTitle:"Airwave தமிழ் அமைப்புகள்",settingsSub:"உங்கள் தமிழ் வானொலி, உங்கள் விருப்பப்படி.",appearance:"தோற்றம்",themeMidnight:"நள்ளிரவு ஊதா",themeAmoled:"AMOLED கருப்பு",themeOcean:"கடல் நீலம்",themeLight:"வெளிச்சம்",themeForest:"காடு",interfaceLanguage:"இடைமுக மொழி",stationCatalogue:"வானொலி பட்டியல்",importBackup:"காப்புப்பிரதியை இறக்குமதி",importJson:"JSON இறக்குமதி",exportBackup:"காப்புப்பிரதியை ஏற்றுமதி",export:"ஏற்றுமதி",hiddenStations:"நீங்கள் மறைத்தவை",manageHidden:"நிர்வகி",clearSaved:"சேமித்தவற்றை அழி",clear:"அழி",aboutNote:"தமிழ் வானொலிகள் ஒரே இடத்தில்.<br>Radio Browser தரவால் இயக்கப்படுகிறது.",done:"முடிந்தது",hidden:"⊘ மறைத்தவை",headingAll:"தமிழ் வானொலிகளை ஆராயுங்கள்",headingFavs:"உங்கள் விருப்பங்கள்",headingRecent:"சமீபத்தில் கேட்டவை",headingHidden:"மறைத்த வானொலிகள்",noStations:"வானொலிகள் இல்லை. தேடல் அல்லது வடிப்பான்களை மாற்றுங்கள்.",noHidden:"மறைத்த வானொலிகள் எதுவும் இல்லை.",loadMore:"மேலும் காட்டு",connecting:"இணைக்கிறது…",playing:"ஒலிபரப்பாகிறது",paused:"இடைநிறுத்தப்பட்டது",streamError:"ஒலிபரப்பை இயக்க முடியவில்லை",chooseStation:"கேட்க ஒரு வானொலியைத் தேர்ந்தெடுக்கவும்",nothingPlaying:"இப்போது எதுவும் ஒலிக்கவில்லை",search:"தமிழ் வானொலிகள், கலைஞர்கள், வகைகளைத் தேடுங்கள்…",hide:"மறை",restore:"மீட்டெடு",favourite:"விருப்பத்தை மாற்று",hideConfirm:"இந்த வானொலியை பட்டியலிலிருந்து மறைக்கவா?",restored:"வானொலி மீட்டெடுக்கப்பட்டது.",hiddenToast:"வானொலி பட்டியலிலிருந்து மறைக்கப்பட்டது.",backupExported:"Airwave காப்புப்பிரதி ஏற்றுமதி செய்யப்பட்டது.",backupImported:"காப்புப்பிரதி இணைக்கப்பட்டது.",importError:"காப்புப்பிரதியை இறக்குமதி செய்ய முடியவில்லை.",clearConfirm:"விருப்பங்கள், மறைத்த வானொலிகள் மற்றும் வரலாற்றை அழிக்கவா?",cleared:"சேமித்த தரவு அழிக்கப்பட்டது.",surpriseEmpty:"தற்போதைய வடிப்பான்களுக்கு ஏற்ற வானொலி இல்லை.",noStream:"இந்த வானொலிக்கு ஒலிபரப்பு இணைப்பு இல்லை.",surprisePick:"திடீர் தேர்வு: "}
+};
+function t(key){return (TEXT[ui]||TEXT.en)[key] ?? TEXT.en[key] ?? key;}
+function updateStaticText(){
+  document.documentElement.lang=ui;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const value=t(el.dataset.i18n);
+    if(value.includes("<br>")) el.innerHTML=value; else el.textContent=value;
+  });
+  $("query").placeholder=t("search");
+  $("settings").title=ui==="ta"?"அமைப்புகள்":"Settings";
+  $("import").title=ui==="ta"?"காப்புப்பிரதியை இறக்குமதி":"Import backup";
+  $("export").title=ui==="ta"?"காப்புப்பிரதியை ஏற்றுமதி":"Export backup";
+  $("more").textContent=t("loadMore");
+  countryNameCache.clear();
+  languageNameCache.clear();
+  if(stations.length) $("dbinfo").textContent=ui==="ta"
+    ? `${stations.length.toLocaleString()} தமிழ் வானொலிகள்`
+    : `${stations.length.toLocaleString()} Tamil stations bundled`;
+}
+let toastTimer = null;
+
+function loadSavedArray(key) {
+  try {
+    const value = JSON.parse(safeStorageGet(key, "[]") || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function stationKey(station) {
+  return station.stationuuid || station.url_stream || "";
+}
+
+function stationTags(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return String(value || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function stationLanguages(station) {
+  if (Array.isArray(station.iso_639)) return station.iso_639.filter(Boolean);
+  return String(station.iso_639 || "")
+    .split(",")
+    .map((code) => code.trim())
+    .filter(Boolean);
+}
+
+function isTamilStation(station) {
+  return stationLanguages(station).some(code => code.toLowerCase() === "ta");
+}
+
+function countryName(code) {
+  if (!code) return "Unknown";
+  if (countryNameCache.has(code)) return countryNameCache.get(code);
+  let name = code;
+  try {
+    name = new Intl.DisplayNames([ui === "ta" ? "ta" : "en"], { type: "region" }).of(code) || code;
+  } catch {}
+  countryNameCache.set(code, name);
+  return name;
+}
+
+function languageName(code) {
+  if (!code) return "";
+  if (languageNameCache.has(code)) return languageNameCache.get(code);
+  let name = code;
+  try {
+    name = new Intl.DisplayNames([ui === "ta" ? "ta" : "en"], { type: "language" }).of(code) || code;
+  } catch {}
+  languageNameCache.set(code, name);
+  return name;
+}
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    $("toast").style.display = "none";
+  }, 2400);
+}
+
+function savePreferences() {
+  safeStorageSet("airwave-favs", JSON.stringify([...favs]));
+  safeStorageSet("airwave-recent", JSON.stringify(recent));
+  safeStorageSet("airwave-imported-favs", JSON.stringify(importedFavouriteStations));
+  safeStorageSet("airwave-hidden-ids", JSON.stringify([...hiddenStationIds]));
+  safeStorageSet("airwave-hidden-records", JSON.stringify(hiddenStationRecords));
+}
+
+function allKnownStations() {
+  const unique = new Map();
+  [...stations, ...importedFavouriteStations, ...hiddenStationRecords].forEach((station) => {
+    if (!isTamilStation(station)) return;
+    const id = stationKey(station);
+    if (id) unique.set(id, station);
+  });
+  return [...unique.values()];
+}
+
+/* 03 · THEME + STATION CARD UI */
+function applyTheme(theme) {
+  const allowedThemes = ["midnight", "amoled", "ocean", "light", "forest"];
+  const selectedTheme = allowedThemes.includes(theme) ? theme : "midnight";
+
+  document.body.dataset.theme = selectedTheme;
+  safeStorageSet("airwave-theme", selectedTheme);
+  $("theme").value = selectedTheme;
+}
+
+function makeStationCard(station) {
+  const card = document.createElement("article");
+  card.className = "station";
+
+  let logo;
+  if (station.url_favicon) {
+    logo = document.createElement("img");
+    logo.className = "logo";
+    logo.alt = "";
+    logo.loading = "lazy";
+    logo.src = station.url_favicon;
+    logo.onerror = () => {
+      const fallback = document.createElement("div");
+      fallback.className = "logo";
+      fallback.textContent = "♫";
+      logo.replaceWith(fallback);
+    };
+  } else {
+    logo = document.createElement("div");
+    logo.className = "logo";
+    logo.textContent = "♫";
+  }
+
+  const info = document.createElement("div");
+  info.className = "info";
+
+  const name = document.createElement("div");
+  name.className = "name";
+  name.textContent = station.name || "Unnamed station";
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  const languages = stationLanguages(station);
+  meta.textContent = [
+    countryName(station.iso_3166_1),
+    stationTags(station.tags).slice(0, 2).join(" · "),
+    languages.map(languageName).join(", ")
+  ].filter(Boolean).join(" • ");
+
+  info.append(name, meta);
+
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  const favouriteButton = document.createElement("button");
+  favouriteButton.className = "smallbtn";
+  favouriteButton.textContent = favs.has(stationKey(station)) ? "♥" : "♡";
+  favouriteButton.title = t("favourite");
+  if (favs.has(stationKey(station))) {
+    favouriteButton.classList.add("liked");
+  }
+  favouriteButton.onclick = () => {
+    const id = stationKey(station);
+    if (favs.has(id)) {
+      favs.delete(id);
+    } else {
+      favs.add(id);
+    }
+    savePreferences();
+    applyFilters();
+  };
+
+  const playButton = document.createElement("button");
+  playButton.className = "smallbtn play";
+  playButton.textContent = "▶";
+  playButton.title = ui === "ta" ? "வானொலியை இயக்கு" : "Play station";
+  playButton.onclick = () => playStation(station);
+
+  const hideButton = document.createElement("button");
+  hideButton.className = "smallbtn";
+  const isHiddenView = view === "hidden";
+  hideButton.textContent = isHiddenView ? "↶" : "⊘";
+  hideButton.title = isHiddenView ? t("restore") : t("hide");
+  hideButton.setAttribute("aria-label", hideButton.title);
+  if (isHiddenView) hideButton.onclick = () => {
+    const id = stationKey(station);
+    hiddenStationIds.delete(id);
+    hiddenStationRecords = hiddenStationRecords.filter(item => stationKey(item) !== id);
+    savePreferences();
+    applyFilters();
+    toast(t("restored"));
+  };
+  else hideButton.onclick = () => {
+    const id = stationKey(station);
+    if (!id) return;
+    hiddenStationIds.add(id);
+    if (!stations.some(item => stationKey(item) === id) && !hiddenStationRecords.some(item => stationKey(item) === id)) hiddenStationRecords.push(station);
+    savePreferences();
+    applyFilters();
+    toast(t("hiddenToast"));
+  };
+
+  actions.append(favouriteButton, hideButton, playButton);
+  card.append(logo, info, actions);
+  return card;
+}
+
+/* 04 · SEARCH, FILTERS, SORTING + RESULTS */
+function applyFilters() {
+  const query = $("query").value.trim().toLowerCase();
+  const selectedCountry = $("country").value;
+  const selectedLanguage = "";
+  const selectedGenre = $("genre").value;
+  const source = view === "favs" || view === "recent" || view === "hidden" ? allKnownStations() : stations;
+
+  const noFilters = !query && !selectedCountry && !selectedLanguage && !selectedGenre && hiddenStationIds.size === 0;
+  filtered = source === stations && noFilters ? stations : source.filter((station) => {
+    const id = stationKey(station);
+    if (view === "hidden") { if (!hiddenStationIds.has(id)) return false; }
+    else if (hiddenStationIds.has(id)) return false;
+    if (view === "favs" && !favs.has(id)) return false;
+    if (view === "recent" && !recent.includes(id)) return false;
+    if (selectedCountry && station.iso_3166_1 !== selectedCountry) return false;
+
+    
+    if (selectedGenre && !stationTags(station.tags).some((tag) => tag.toLowerCase() === selectedGenre)) return false;
+
+    if (!query) return true;
+    const languages = stationLanguages(station);
+    const searchableText = [
+      station.name || "",
+      station.tags || "",
+      station.iso_3166_1 || "",
+      countryName(station.iso_3166_1),
+      ...languages,
+      ...languages.map(languageName)
+    ].join(" ").toLowerCase();
+    return searchableText.includes(query);
+  });
+
+  if (view === "recent") {
+    filtered.sort((a, b) => recent.indexOf(stationKey(a)) - recent.indexOf(stationKey(b)));
+  } else if ($("sort").value === "country") {
+    filtered.sort((a, b) => stationCollator.compare(countryName(a.iso_3166_1), countryName(b.iso_3166_1)));
+  } else if ($("sort").value === "random") {
+    // Fisher-Yates shuffle avoids the slow and unstable random sort comparator.
+    for (let i = filtered.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+    }
+  } else if (source !== stations) {
+    filtered.sort((a, b) => stationCollator.compare(a.name || "", b.name || ""));
+  }
+
+  shown = 0;
+  renderStations();
+}
+
+function renderStations() {
+  const list = $("list");
+  list.replaceChildren();
+
+  const page = filtered.slice(0, shown + PAGE_SIZE);
+  shown = page.length;
+  page.forEach((station) => list.append(makeStationCard(station)));
+
+  $("count").textContent = ui === "ta" ? `${filtered.length.toLocaleString()} வானொலிகள்` : `${filtered.length.toLocaleString()} stations`;
+  $("heading").textContent = {
+    all: t("headingAll"),
+    favs: t("headingFavs"),
+    recent: t("headingRecent"),
+    hidden: t("headingHidden")
+  }[view];
+
+  $("more").hidden = shown >= filtered.length;
+
+  if (page.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = view === "hidden" ? t("noHidden") : t("noStations");
+    list.append(empty);
+  }
+}
+
+/* 05 · RADIO PLAYER + LISTENING HISTORY */
+function playStation(station) {
+  if (!station.url_stream) {
+    toast(t("noStream"));
+    return;
+  }
+
+  current = station;
+  $("trackname").textContent = station.name || "Unknown station";
+  $("trackstate").textContent = t("connecting");
+  $("toggle").disabled = false;
+  $("playerfav").disabled = false;
+  $("playerfav").textContent = favs.has(stationKey(station)) ? "♥" : "♡";
+
+  audio.src = station.url_stream;
+  audio.play()
+    .then(() => {
+      $("trackstate").textContent = t("playing");
+    })
+    .catch(() => {
+      $("trackstate").textContent = t("streamError");
+    });
+
+  const id = stationKey(station);
+  recent = [id, ...recent.filter((item) => item !== id)].slice(0, 100);
+  savePreferences();
+}
+
+$("toggle").onclick = () => {
+  if (audio.paused) {
+    audio.play().catch(() => {});
+  } else {
+    audio.pause();
+  }
+};
+
+audio.onplay = () => {
+  $("toggle").textContent = "Ⅱ";
+  $("trackstate").textContent = t("playing");
+};
+
+audio.onpause = () => {
+  $("toggle").textContent = "▶";
+  if (current) $("trackstate").textContent = t("paused");
+};
+
+audio.onerror = () => {
+  $("trackstate").textContent = t("streamError");
+};
+
+$("playerfav").onclick = () => {
+  if (!current) return;
+
+  const id = stationKey(current);
+  if (favs.has(id)) {
+    favs.delete(id);
+  } else {
+    favs.add(id);
+  }
+
+  savePreferences();
+  $("playerfav").textContent = favs.has(id) ? "♥" : "♡";
+  applyFilters();
+};
+
+/* 06 · SURPRISE ME
+   The pick is always taken from the currently filtered results.
+*/
+function surpriseMe() {
+  const playableStations = filtered.filter((station) => station.url_stream);
+
+  if (playableStations.length === 0) {
+    toast(t("surpriseEmpty"));
+    return;
+  }
+
+  const pick = playableStations[Math.floor(Math.random() * playableStations.length)];
+  playStation(pick);
+  toast(`${t("surprisePick")}${pick.name || "A new station"}`);
+}
+
+function setView(nextView) {
+  view = nextView;
+
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === view);
+  });
+
+  applyFilters();
+}
+
+document.querySelectorAll("[data-view]").forEach((button) => {
+  button.onclick = () => setView(button.dataset.view);
+});
+
+$("surprise").onclick = surpriseMe;
+
+$("reset").onclick = () => {
+  $("query").value = "";
+  $("country").value = "";
+  $("genre").value = "";
+  $("sort").value = "name";
+  applyFilters();
+};
+
+$("query").oninput = () => {
+  clearTimeout(window.airwaveSearchDelay);
+  window.airwaveSearchDelay = setTimeout(applyFilters, 140);
+};
+
+["country", "genre", "sort"].forEach((id) => {
+  $(id).onchange = applyFilters;
+});
+
+$("more").onclick = renderStations;
+
+/* 07 · SETTINGS + INTERFACE LANGUAGE */
+function openSettings() {
+  $("settingsbg").style.display = "flex";
+}
+
+function closeSettings() {
+  $("settingsbg").style.display = "none";
+}
+
+$("settings").onclick = openSettings;
+$("close").onclick = closeSettings;
+
+$("settingsbg").onclick = (event) => {
+  if (event.target === $("settingsbg")) closeSettings();
+};
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeSettings();
+});
+
+$("theme").onchange = (event) => applyTheme(event.target.value);
+
+function applyInterfaceLanguage(language, shouldRender = true) {
+  ui = language === "ta" ? "ta" : "en";
+  safeStorageSet("airwave-language", ui);
+  $("uilang").value = ui;
+  updateStaticText();
+  if (shouldRender) {
+    renderStations();
+    if (current) $("trackstate").textContent = audio.paused ? t("paused") : t("playing");
+  }
+}
+
+$("uilang").onchange = (event) => {
+  applyInterfaceLanguage(event.target.value);
+};
+
+/* 08 · IMPORT / EXPORT BACKUP
+   One backup file carries both favourites and hidden stations.
+   Legacy favourites-only JSON files remain supported.
+*/
+function downloadFile(filename, contents, mimeType) {
+  const file = new Blob([contents], { type: mimeType });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1200);
+}
+
+function exportFavourites() {
+  const known = allKnownStations();
+  const backup = {
+    app: "Airwave Tamil",
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    favourites: known.filter(station => favs.has(stationKey(station))),
+    hiddenStations: known.filter(station => hiddenStationIds.has(stationKey(station)))
+  };
+  downloadFile("airwave-tamil-backup.json", JSON.stringify(backup, null, 2), "application/json");
+  toast(t("backupExported"));
+}
+
+function importFavouritesFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      const favList = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray(parsed.favourites) ? parsed.favourites
+        : Array.isArray(parsed.stations) ? parsed.stations : [];
+      const hiddenList = !Array.isArray(parsed) && Array.isArray(parsed.hiddenStations)
+        ? parsed.hiddenStations : [];
+      const catalogueKeys = new Set(stations.map(stationKey));
+      const importedKeys = new Set(importedFavouriteStations.map(stationKey));
+      const hiddenRecordKeys = new Set(hiddenStationRecords.map(stationKey));
+
+      for (const station of favList) {
+        if (!station || !isTamilStation(station) || typeof station.url_stream !== "string" || !station.url_stream.trim()) continue;
+        const id = stationKey(station);
+        if (!id) continue;
+        favs.add(id);
+        if (!catalogueKeys.has(id) && !importedKeys.has(id)) {
+          importedFavouriteStations.push(station);
+          importedKeys.add(id);
+        }
+      }
+
+      for (const station of hiddenList) {
+        if (!station || !isTamilStation(station) || typeof station.url_stream !== "string" || !station.url_stream.trim()) continue;
+        const id = stationKey(station);
+        if (!id) continue;
+        hiddenStationIds.add(id);
+        if (!catalogueKeys.has(id) && !hiddenRecordKeys.has(id)) {
+          hiddenStationRecords.push(station);
+          hiddenRecordKeys.add(id);
+        }
+      }
+
+      savePreferences();
+      applyFilters();
+      toast(t("backupImported"));
+    } catch (error) {
+      console.error("Airwave backup import failed:", error);
+      toast(t("importError"));
+    }
+  };
+  reader.onerror = () => toast(t("importError"));
+  reader.readAsText(file);
+}
+
+$("export").onclick = exportFavourites;
+$("export2").onclick = exportFavourites;
+
+function chooseFavouriteFile() { $("file").click(); }
+$("import").onclick = chooseFavouriteFile;
+$("import2").onclick = chooseFavouriteFile;
+$("file").onchange = (event) => {
+  const file = event.target.files[0];
+  if (file) importFavouritesFile(file);
+  event.target.value = "";
+};
+
+$("hiddenList").onclick = () => {
+  closeSettings();
+  setView("hidden");
+};
+
+$("clear").onclick = () => {
+  if (!confirm(t("clearConfirm"))) return;
+  favs.clear();
+  recent = [];
+  hiddenStationIds.clear();
+  hiddenStationRecords = [];
+  importedFavouriteStations = [];
+  savePreferences();
+  applyFilters();
+  toast(t("cleared"));
+};
+
+/* 09 · LOAD CATALOGUE + BUILD FILTER MENUS */
+function addSelectOptions(selectId, values, formatLabel) {
+  const select = $(selectId);
+  const sortedValues = [...values].sort((a, b) => stationCollator.compare(a, b));
+  const fragment = document.createDocumentFragment();
+  for (const value of sortedValues) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = formatLabel(value);
+    fragment.append(option);
+  }
+  select.append(fragment);
+}
+
+function yieldToBrowser() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+async function loadCatalogue() {
+  const list = $("list");
+  const count = $("count");
+
+  try {
+    // Paint the Airwave shell and loading message before handling the large catalogue.
+    count.textContent = ui === "ta" ? "தமிழ் வானொலிகளைத் தயாரிக்கிறது…" : "Getting your Tamil radio stations ready…";
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await yieldToBrowser();
+
+    if (!("DecompressionStream" in window)) {
+      throw new Error("This browser does not support gzip decoding. Please use an updated Chrome browser.");
+    }
+
+    count.textContent = ui === "ta" ? "வானொலி பட்டியலைத் திறக்கிறது…" : "Unpacking the Tamil station catalogue…";
+    await yieldToBrowser();
+
+    const binary = atob(DB);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    DB = "";
+
+    const compressedStream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+    const json = await new Response(compressedStream).text();
+    count.textContent = ui === "ta" ? "வானொலி விவரங்களைப் படிக்கிறது…" : "Reading station details…";
+    await yieldToBrowser();
+
+    const parsed = JSON.parse(json);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error("The bundled station catalogue is empty or invalid.");
+    }
+    stations = parsed;
+
+    // Show real station cards immediately after parsing. Filter menus continue
+    // building in small batches while the page remains responsive.
+    $("dbinfo").textContent = `${stations.length.toLocaleString()} Tamil stations · preparing filters`;
+    applyTheme(safeStorageGet("airwave-theme", "midnight") || "midnight");
+    applyInterfaceLanguage(ui, false);
+    applyFilters();
+    await yieldToBrowser();
+
+    const countries = new Set();
+    const genreCounts = new Map();
+    const ignoredTags = new Set([
+      "radio", "fm", "am", "webradio", "web radio", "online", "live",
+      "music", "música", "station", "broadcast", "stream", "internet radio"
+    ]);
+
+    // Process records in chunks so the browser can paint and respond between batches.
+    const chunkSize = 2500;
+    for (let start = 0; start < stations.length; start += chunkSize) {
+      const end = Math.min(start + chunkSize, stations.length);
+      for (let i = start; i < end; i += 1) {
+        const station = stations[i];
+        if (station.iso_3166_1) countries.add(station.iso_3166_1);
+        for (const tag of stationTags(station.tags)) {
+          const genre = tag.toLowerCase();
+          if (genre.length < 2 || genre.length > 32 || genre.split(/\s+/).length > 4 || ignoredTags.has(genre)) continue;
+          genreCounts.set(genre, (genreCounts.get(genre) || 0) + 1);
+        }
+      }
+      $("dbinfo").textContent = `Preparing filters · ${end.toLocaleString()} / ${stations.length.toLocaleString()}`;
+      await yieldToBrowser();
+    }
+
+    addSelectOptions("country", countries, countryName);
+    const popularGenres = [...genreCounts.entries()]
+      .filter(([, frequency]) => frequency >= 8)
+      .sort((a, b) => b[1] - a[1] || stationCollator.compare(a[0], b[0]))
+      .slice(0, 180)
+      .map(([genre]) => genre);
+    addSelectOptions("genre", popularGenres, (genre) => genre.replace(/\b\w/g, (letter) => letter.toUpperCase()));
+
+    $("dbinfo").textContent = `${stations.length.toLocaleString()} Tamil stations bundled`;
+    applyFilters();
+  } catch (error) {
+    console.error("Airwave catalogue loading failed:", error);
+    count.textContent = ui === "ta" ? "Airwave ஏற்றப்படவில்லை." : "Airwave could not finish loading.";
+    list.replaceChildren();
+    const message = document.createElement("div");
+    message.className = "empty";
+    message.textContent = ui === "ta" ? `வானொலி பட்டியலை ஏற்ற முடியவில்லை: ${error && error.message ? error.message : "தெரியாத பிழை"}. Chrome-ஐ புதுப்பித்து முயற்சிக்கவும்.` : `Tamil catalogue loading failed: ${error && error.message ? error.message : "Unknown error"}. Try an updated Chrome browser.`;
+    list.append(message);
+  }
+}
+
+window.addEventListener("error", (event) => {
+  console.error("Airwave runtime error:", event.error || event.message);
+});
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Airwave background task failed:", event.reason);
+});
+
+applyInterfaceLanguage(ui, false);
+updateStaticText();
+loadCatalogue();
+
+</script></body></html>
