@@ -1,350 +1,1670 @@
+<!--
+AIRWAVE TAMIL | SOURCE GUIDE
+Made by Prasanna.
+
+FILES
+- index.html: app interface and radio player.
+- tamil-stations.json: separate Tamil station catalogue.
+
+The catalogue is fetched from ./tamil-stations.json. Keep both files in
+this same repository folder. Replace the JSON file to update the stations.
+-->
 <!doctype html>
 <html lang="ta">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d1913">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101913">
 <meta name="author" content="Prasanna">
-<meta name="description" content="தமிழ் வானொலிகளைக் கேளுங்கள். Your lil corner of Tamil radio.">
+<meta name="description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் தேடுங்கள், கேளுங்கள். Airwave Tamil.">
+<link rel="canonical" href="https://prasannaone.github.io/Airwave-Tamil/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Airwave Tamil · தமிழ் வானொலி">
-<meta property="og:description" content="உங்கள் தமிழ் வானொலி உலகம். Find your frequency.">
+<meta property="og:site_name" content="Airwave Tamil">
+<meta property="og:title" content="Airwave Tamil · உங்கள் அலைவரிசையைக் கண்டறியுங்கள்">
+<meta property="og:description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் தேடுங்கள், கேளுங்கள்.">
+<meta property="og:url" content="https://prasannaone.github.io/Airwave-Tamil/">
+<meta property="og:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Airwave Tamil. உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.png">
+<meta name="twitter:title" content="Airwave Tamil">
+<meta name="twitter:description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் கேளுங்கள்.">
 <title>Airwave Tamil · தமிழ் வானொலி</title>
 <style>
-:root{color-scheme:dark;--bg:#0d1913;--surface:#14231b;--surface2:#1a2b21;--surface3:#203329;--line:#304438;--text:#edf4ed;--muted:#a5b6a9;--accent:#b4cd91;--accent-ink:#142015;--danger:#e59b95;--shadow:0 20px 70px #0008;--radius:25px;--header:rgba(13,25,19,.88)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans Tamil","Latha",sans-serif;min-height:100vh;padding-bottom:118px}button,input,select{font:inherit}button{color:inherit;cursor:pointer}a{color:inherit}body[data-theme="midnight"]{--bg:#11101b;--surface:#1c1a29;--surface2:#252235;--surface3:#302b43;--line:#403950;--text:#f2eef9;--muted:#b5adbf;--accent:#c3a6f0;--accent-ink:#1d142b;--header:rgba(17,16,27,.9)}body[data-theme="amoled"]{--bg:#000;--surface:#090909;--surface2:#111;--surface3:#1b1b1b;--line:#303030;--text:#f5f5f5;--muted:#aaa;--accent:#b6d78f;--accent-ink:#101810;--header:rgba(0,0,0,.9)}body[data-theme="ocean"]{--bg:#091923;--surface:#102631;--surface2:#173442;--surface3:#204454;--line:#315363;--text:#e9f5f7;--muted:#a8c0c7;--accent:#8bd4d0;--accent-ink:#092022;--header:rgba(9,25,35,.9)}body[data-theme="light"]{color-scheme:light;--bg:#f3f5ef;--surface:#fff;--surface2:#edf1e8;--surface3:#e2e9db;--line:#d5dfd0;--text:#1b2a20;--muted:#647367;--accent:#a9c58b;--accent-ink:#172317;--header:rgba(243,245,239,.9);--shadow:0 20px 70px #273b281c}body[data-theme="forest"]{color-scheme:dark}
-button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.app{width:min(100%,900px);margin:0 auto;padding:0 18px}.topbar{height:94px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;background:var(--header);backdrop-filter:blur(18px);padding:0 2px}.brand{display:flex;align-items:center;gap:13px;min-width:0}.brandmark{width:64px;height:64px;border-radius:23px;background:linear-gradient(135deg,var(--accent),#83c9a5);display:grid;place-items:center;color:#112118;flex:none}.brandmark svg{width:38px;height:38px}.brandname{font-size:clamp(27px,5vw,39px);font-weight:850;letter-spacing:-1.8px}.brandname span{color:var(--accent)}.head-actions{display:flex;gap:10px}.icon-btn{width:58px;height:58px;border:1px solid var(--line);background:var(--surface);border-radius:22px;display:grid;place-items:center;font-size:25px;transition:background .15s,border-color .15s}.icon-btn:active,.action-btn:active,.nav-tile:active{transform:scale(.98)}.icon-btn:hover{background:var(--surface2);border-color:var(--accent)}.icon-btn svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.hero{padding:37px 0 22px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px}.hero h1{font-size:clamp(31px,6vw,48px);line-height:1.2;letter-spacing:-1.6px;margin:0;font-weight:850}.hero p{margin:8px 0 0;color:var(--muted);font-size:18px}.search-wrap{position:relative;margin:18px 0 28px}.search-wrap svg{position:absolute;left:23px;top:50%;transform:translateY(-50%);width:23px;height:23px;stroke:var(--muted);fill:none;stroke-width:2}.search{width:100%;height:70px;border:1px solid var(--line);border-radius:25px;background:var(--surface);color:var(--text);padding:0 22px 0 62px;font-size:17px;outline:none}.search::placeholder{color:var(--muted)}.search:focus{border-color:var(--accent)}.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 34px}.nav-tile{height:77px;border:1px solid var(--line);border-radius:25px;background:var(--surface);color:var(--muted);font-size:17px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:9px;transition:background .15s,border-color .15s}.nav-tile.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.nav-tile .nav-symbol{font-size:22px;font-weight:500}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 15px}.section-head h2{font-size:clamp(20px,4vw,27px);margin:0;font-weight:820;letter-spacing:-.5px}.count{color:var(--muted);font-size:14px;margin-top:5px}.sort{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:18px;padding:13px 36px 13px 14px;max-width:155px;min-height:52px;font-size:14px}.station-list{display:grid;gap:13px}.station{display:flex;align-items:center;gap:13px;min-height:105px;padding:13px;border:1px solid var(--line);border-radius:27px;background:var(--surface);min-width:0}.station-logo{width:72px;height:72px;border-radius:19px;background:var(--surface3);display:grid;place-items:center;overflow:hidden;flex:none;color:var(--accent);font-size:26px;font-weight:800}.station-logo img{width:100%;height:100%;object-fit:cover}.station-info{flex:1;min-width:0}.station-name{font-size:17px;font-weight:800;line-height:1.3;overflow-wrap:anywhere}.station-meta{font-size:13px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.station-actions{display:flex;gap:7px;flex:none}.action-btn{width:49px;height:51px;border:1px solid var(--line);border-radius:17px;background:var(--surface2);display:grid;place-items:center;font-size:23px;transition:background .15s,border-color .15s}.action-btn:hover{border-color:var(--accent)}.action-btn.liked{color:var(--accent)}.action-btn.play{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:18px}.action-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8}.load-more{display:block;margin:18px auto 30px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:17px;padding:14px 24px;font-weight:750}.empty,.loading,.error-box{padding:34px 18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:22px;background:var(--surface)}.error-box{color:var(--text);border-style:solid}.error-box p{color:var(--muted);line-height:1.6}.primary{border:0;background:var(--accent);color:var(--accent-ink);border-radius:15px;padding:13px 18px;font-weight:800}.secondary{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:15px;padding:12px 16px;font-weight:700}.bottom-player{position:fixed;z-index:30;bottom:0;left:0;right:0;background:var(--header);backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:12px max(18px,calc((100vw - 864px)/2)) calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px}.mini-art{width:58px;height:58px;border-radius:19px;background:linear-gradient(135deg,var(--accent),#77bda0);color:#102018;display:grid;place-items:center;font-size:25px;flex:none}.mini-info{flex:1;min-width:0;cursor:pointer}.mini-title{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-status{font-size:13px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-player-btn{width:57px;height:57px;border-radius:19px;border:1px solid var(--line);background:var(--surface);font-size:23px;display:grid;place-items:center;flex:none}.mini-player-btn.play{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.mini-player-btn:disabled{opacity:.4;cursor:not-allowed}.modal-backdrop{position:fixed;inset:0;z-index:60;background:#0009;display:none;align-items:flex-end;justify-content:center;padding:14px}.modal-backdrop.open{display:flex}.modal{width:min(100%,620px);max-height:min(88dvh,850px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:29px 29px 22px 22px;box-shadow:var(--shadow);padding:22px}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}.modal-head h3{margin:0;font-size:23px}.modal-head p{margin:5px 0 0;color:var(--muted);font-size:14px}.close-btn{width:42px;height:42px;border:1px solid var(--line);background:var(--surface2);border-radius:14px;font-size:23px;flex:none}.setting-group{border-top:1px solid var(--line);padding:17px 0}.setting-group h4{margin:0 0 11px;font-size:15px}.setting-group p{margin:7px 0;color:var(--muted);font-size:13px;line-height:1.55}.field{display:grid;gap:7px;margin:12px 0}.field label{font-size:13px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:14px;padding:13px 14px;min-height:48px}.setting-select{width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:14px;padding:12px 14px}.button-row{display:flex;flex-wrap:wrap;gap:9px}.hidden-list{display:grid;gap:8px}.hidden-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px}.hidden-row span{font-size:14px;overflow-wrap:anywhere}.hidden-row button{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:11px;padding:8px 11px}.player-sheet{text-align:center}.player-art{width:128px;height:128px;border-radius:30px;margin:5px auto 17px;background:linear-gradient(135deg,var(--accent),#7cbea0);display:grid;place-items:center;color:#142018;font-size:52px;overflow:hidden}.player-art img{width:100%;height:100%;object-fit:cover}.player-sheet h3{font-size:24px;margin:0}.player-sheet .muted{color:var(--muted);margin:7px 0 20px}.player-controls{display:flex;justify-content:center;gap:12px;margin:18px 0}.player-controls button{width:62px;height:60px;border:1px solid var(--line);border-radius:20px;background:var(--surface2);font-size:25px}.player-controls button.primary-play{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.volume-row{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}.volume-row input{flex:1;accent-color:var(--accent)}.toast{position:fixed;z-index:90;bottom:105px;left:50%;transform:translate(-50%,12px);background:var(--text);color:var(--bg);border-radius:14px;padding:11px 16px;font-size:13px;font-weight:750;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 30px);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.footer-note{text-align:center;color:var(--muted);font-size:12px;padding:28px 0 18px}.footer-note a{color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-width:480px){.app{padding:0 14px}.topbar{height:82px}.brandmark{width:55px;height:55px;border-radius:20px}.brandname{font-size:30px}.head-actions{gap:7px}.icon-btn{width:47px;height:49px;border-radius:17px}.hero{padding-top:30px}.hero p{font-size:16px}.search{height:64px}.nav-tile{height:69px;font-size:15px;border-radius:21px}.station{gap:10px;padding:10px;min-height:91px;border-radius:23px}.station-logo{width:61px;height:61px;border-radius:16px}.station-name{font-size:15px}.station-meta{font-size:12px}.station-actions{gap:5px}.action-btn{width:39px;height:43px;border-radius:14px;font-size:19px}.bottom-player{gap:9px;padding-left:12px;padding-right:12px}.mini-art{width:51px;height:51px;border-radius:17px}.mini-title{font-size:14px}.mini-status{font-size:12px}.mini-player-btn{width:49px;height:51px;border-radius:16px}.sort{max-width:135px;padding-left:10px;font-size:12px}.section-head h2{font-size:21px}}
-@media(max-width:360px){.brandname{font-size:25px}.hero h1{font-size:26px;letter-spacing:-1.1px}.icon-btn{width:42px;height:44px}.station-logo{width:52px;height:52px}.action-btn{width:35px;height:39px}.station{gap:8px}.action-btn.hide{display:none}.nav-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nav-tile{min-width:0;flex-direction:column;gap:3px;padding:6px;white-space:normal;line-height:1.15}.nav-tile .nav-symbol{font-size:18px;line-height:1}.nav-tile span:last-child{font-size:12px;text-align:center;overflow-wrap:anywhere}.section-head{flex-wrap:wrap;align-items:flex-start}.sort{width:120px;max-width:100%;min-width:0;margin-left:auto}}
+:root{color-scheme:dark;--bg:#0b0d14;--surface:#141a27;--surface2:#1c2434;--line:#29344a;--text:#f5f6fc;--muted:#9ba7bd;--accent:#a99bff;--mint:#70e4d0;--pink:#ff8eae;--shadow:0 15px 45px #0004}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -12%,#403675 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding-bottom:100px}
+body.light{color-scheme:light;--bg:#f3f5fb;--surface:#fff;--surface2:#eef1f8;--line:#dce1ed;--text:#171b2b;--muted:#68738a;--accent:#6756d9;--mint:#008f83;--pink:#d84978;--shadow:0 15px 45px #27314b18;background:radial-gradient(ellipse at 80% -12%,#ddd7ff 0,transparent 35%),var(--bg)}
+body.amoled{--bg:#000;--surface:#090909;--surface2:#141414;--line:#292929;background:#000}
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:1000px;margin:auto;padding:18px 16px 25px}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 22px}.brand{display:flex;align-items:center;gap:11px}.mark{width:44px;height:44px;border-radius:15px;background:linear-gradient(140deg,var(--accent),var(--mint));display:grid;place-items:center;color:#10131b;font-size:23px;box-shadow:0 8px 25px #8d7dff44}.brand h1{font-size:22px;letter-spacing:-.8px;margin:0;font-weight:850}.brand small{color:var(--muted);font-size:11px}.head-actions{display:flex;gap:7px}.iconbtn{height:48px;min-width:48px;padding:0 11px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);display:grid;place-items:center;font-size:16px}
+.hero{margin-bottom:19px}.tagline-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.tagline-tags span{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:7px 11px;border-radius:30px;font-size:11px}.eyebrow{font-size:10px;font-weight:850;letter-spacing:1.9px;color:var(--mint)}.hero h2{font-size:clamp(29px,6vw,43px);letter-spacing:-1.8px;line-height:1.04;margin:8px 0}.hero p{color:var(--muted);margin:0;max-width:600px;font-size:13px}
+.controls{position:sticky;top:0;z-index:6;padding:9px 0 12px;background:linear-gradient(var(--bg) 82%,transparent);backdrop-filter:blur(12px)}.search{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid var(--line);background:var(--surface);border-radius:15px;box-shadow:var(--shadow)}.search span{font-size:20px;color:var(--muted)}#query{width:100%;height:100%;border:0;outline:0;background:transparent;color:var(--text)}#query::placeholder{color:var(--muted)}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.filters select,.sort{width:100%;min-width:0;min-height:48px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:12px}
+.nav{display:flex;align-items:center;gap:7px;margin:13px 0 16px;overflow:auto}.nav button{min-height:48px;padding:11px 17px;white-space:nowrap;border:1px solid var(--line);border-radius:30px;background:var(--surface);color:var(--muted);padding:9px 14px;font-size:12px}.nav button.active{background:var(--accent);color:#111;border-color:var(--accent);font-weight:800}
+.rowhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 1px 11px}.rowhead h3{font-size:16px;margin:0}.rowhead small{color:var(--muted);font-size:11px}.sort{width:auto;max-width:160px}
+.stationlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.station{display:flex;align-items:center;gap:10px;min-width:0;padding:11px;background:var(--surface);border:1px solid var(--line);border-radius:16px;transition:border .15s}.station:active{transform:scale(.99)}.station:hover{border-color:#9385ed}.logo{width:43px;height:43px;flex:none;border-radius:13px;background:var(--surface2);object-fit:cover;display:grid;place-items:center;color:var(--accent);font-size:18px}.info{flex:1;min-width:0}.name{font-weight:750;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.actions{display:flex;gap:5px}.smallbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);display:grid;place-items:center}.smallbtn.play{background:var(--accent);color:#111;border-color:transparent}.smallbtn.liked{color:var(--pink)}.smallbtn.hidebtn{font-size:15px;color:var(--muted)}.smallbtn.hidebtn:hover{color:var(--pink)}
+.empty{grid-column:1/-1;padding:36px 15px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:16px}.more{width:100%;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text)}
+.player{position:fixed;bottom:0;left:0;right:0;z-index:8;padding:10px 15px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(18px);border-top:1px solid var(--line)}.playerin{max-width:970px;margin:auto;display:flex;align-items:center;gap:11px}.cover{width:42px;height:42px;border-radius:13px;background:linear-gradient(140deg,var(--accent),var(--mint));display:grid;place-items:center;color:#111;font-size:19px;flex:none}.track{flex:1;min-width:0}.track b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track small{font-size:10px;color:var(--muted)}.player button{height:48px;width:48px;border:0;border-radius:13px;background:var(--accent);color:#111;font-size:16px}.player button.secondary{background:var(--surface2);border:1px solid var(--line);color:var(--text)}
+.modalbg{position:fixed;inset:0;background:#000a;z-index:20;display:none;align-items:center;justify-content:center;padding:17px}.modal{width:min(430px,100%);background:var(--surface);border:1px solid var(--line);border-radius:21px;padding:19px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}.modal h3{margin:0 0 5px;font-size:18px}.modal p{margin:0 0 14px;color:var(--muted);font-size:12px}.setting{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.setting label{font-size:13px}.setting select{max-width:180px;padding:9px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text)}.modalactions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.action{border:0;border-radius:11px;background:var(--accent);color:#111;padding:10px 14px;font-weight:750}.action.secondary{background:var(--surface2);border:1px solid var(--line);color:var(--text)}.toast{position:fixed;z-index:30;bottom:83px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:12px;display:none;max-width:90%}
+@media(max-width:650px){.app{padding:14px 12px 22px}.stationlist{grid-template-columns:1fr}.hero h2{font-size:34px}.filters{grid-template-columns:1fr 1fr}.filters select:last-child{grid-column:1/-1}.header{margin-bottom:19px}}
 
-/* Responsive refinement: compact hero and balanced navigation */
-.hero{padding:clamp(22px,4vw,34px) 0 16px}
-.hero h1{font-size:clamp(24px,5.2vw,39px);line-height:1.28;letter-spacing:-.7px;max-width:100%;text-wrap:balance}
-.search-wrap{margin:16px 0 20px}
-.search{height:62px;border-radius:21px;font-size:16px}
-.nav-grid{gap:10px;margin-bottom:26px}
-.nav-tile{height:66px;min-width:0;padding:0 10px;border-radius:21px;font-size:clamp(14px,2.5vw,17px);gap:8px;white-space:nowrap}
-.nav-tile .nav-symbol{font-size:20px;flex:none}
-@media(max-width:480px){
- .hero{padding-top:23px;padding-bottom:13px}
- .hero h1{font-size:clamp(23px,6vw,29px);line-height:1.3;letter-spacing:-.35px}
- .search-wrap{margin:14px 0 18px}
- .search{height:58px;font-size:15px;padding-left:54px}
- .search-wrap svg{left:19px}
- .nav-grid{gap:9px;margin-bottom:23px}
- .nav-tile{height:61px;border-radius:18px;font-size:clamp(13px,3.5vw,15px);padding:0 7px;gap:6px}
+/* ==========================================================
+   AIRWAVE DESIGN SETTINGS
+   Edit this section to adjust the look without touching logic.
+   ========================================================== */
+:root {
+  --bg: #10111a;
+  --surface: #181a27;
+  --surface2: #202338;
+  --line: #30354a;
+  --text: #f3f3fa;
+  --muted: #a1a8bd;
+  --accent: #a99bff;
+  --mint: #78d9cf;
+  --pink: #e6a2c2;
+  --shadow: 0 12px 32px #0003;
 }
-@media(max-width:360px){
- .topbar{gap:8px}
- .brand{gap:8px}
- .brandmark{width:48px;height:48px;border-radius:16px}
- .brandname{font-size:25px}
- .head-actions{gap:5px}
- .icon-btn{width:42px;height:44px;border-radius:15px}
- .nav-tile{height:57px;font-size:12px}
- .nav-tile .nav-symbol{font-size:18px}
+body {
+  background: var(--bg);
+}
+body[data-theme="midnight"] {
+  --bg: #10111a;
+  --surface: #181a27;
+  --surface2: #202338;
+  --line: #30354a;
+  --text: #f3f3fa;
+  --muted: #a1a8bd;
+  --accent: #a99bff;
+  --mint: #78d9cf;
+  --pink: #e6a2c2;
+}
+body[data-theme="amoled"] {
+  --bg: #000000;
+  --surface: #090909;
+  --surface2: #141414;
+  --line: #292929;
+  --text: #f5f5f7;
+  --muted: #a0a0aa;
+  --accent: #ad9cff;
+  --mint: #72d9cd;
+  --pink: #ef9abd;
+}
+body[data-theme="ocean"] {
+  --bg: #0d1721;
+  --surface: #14212d;
+  --surface2: #1b2b39;
+  --line: #2b4050;
+  --text: #edf4f8;
+  --muted: #9fb2bf;
+  --accent: #8ebce8;
+  --mint: #75d5c7;
+  --pink: #e9a6c5;
+}
+body[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f5fa;
+  --surface: #ffffff;
+  --surface2: #edf0f7;
+  --line: #dfe3ed;
+  --text: #1c2130;
+  --muted: #69748a;
+  --accent: #786bc9;
+  --mint: #168f83;
+  --pink: #c65d87;
+  --shadow: 0 12px 32px #25304a12;
+}
+body[data-theme="forest"] {
+  --bg: #101913;
+  --surface: #17231b;
+  --surface2: #203026;
+  --line: #304538;
+  --text: #edf4ed;
+  --muted: #a4b7a7;
+  --accent: #adc58d;
+  --mint: #79c9a4;
+  --pink: #dfa0ad;
+}
+body[data-theme="light"] {
+  background: var(--bg);
+}
+body[data-theme="midnight"],
+body[data-theme="amoled"],
+body[data-theme="ocean"],
+body[data-theme="forest"] {
+  color-scheme: dark;
+  background: var(--bg);
+}
+.app {
+  max-width: 960px;
+  padding-top: 20px;
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  margin: 0 -16px 26px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.brand h1 {
+  font-size: 25px;
+}
+.hero {
+  margin-bottom: 24px;
+}
+.hero .eyebrow {
+  margin-bottom: 8px;
+}
+.hero h2 {
+  margin: 0 0 7px;
+  font-size: clamp(29px, 5.7vw, 42px);
+}
+.hero p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.controls {
+  position: relative;
+  top: auto;
+  padding: 0;
+  margin-bottom: 17px;
+  background: transparent;
+  backdrop-filter: none;
+}
+.search {
+  height: 54px;
+  box-shadow: none;
+}
+.filters {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.filters select {
+  min-height: 49px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+.filters select:last-child {
+  grid-column: 1 / -1;
+}
+.filter-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 7px;
+}
+.reset {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 5px 2px;
+  font-size: 11px;
+}
+.reset:hover {
+  color: var(--accent);
+}
+.nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 17px 0 20px;
+  overflow: visible;
+}
+.nav button {
+  min-width: 0;
+  min-height: 47px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  text-align: center;
+}
+.rowhead {
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+.sort {
+  min-height: 46px;
+  padding: 10px 12px;
+}
+.stationlist {
+  gap: 11px;
+}
+.station {
+  padding: 12px;
+  gap: 12px;
+}
+.smallbtn {
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+}
+.iconbtn {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+}
+.player button {
+  width: 46px;
+  height: 46px;
+}
+.player {
+  background: var(--surface);
+}
+.modal {
+  width: min(460px, 100%);
+}
+.setting {
+  gap: 14px;
+}
+.setting select {
+  min-height: 42px;
+}
+.about-credit {
+  margin-top: 16px;
+  padding: 15px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface2);
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+.about-credit strong:first-of-type {
+  color: var(--accent);
+}
+.about-credit span {
+  color: var(--pink);
+}
+.about-note,
+.import-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+@media (max-width: 650px) {
+  .app {
+    padding: 16px 14px 24px;
+  }
+  .header {
+    margin: 0 -14px 24px;
+    padding: 11px 14px;
+  }
+  .hero {
+    margin-bottom: 23px;
+  }
+  .filters {
+    gap: 11px;
+  }
+  .nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 17px;
+  }
+  .nav button {
+    min-height: 48px;
+  }
+  .stationlist {
+    grid-template-columns: 1fr;
+  }
 }
 
 
-
-/* AIRWAVE TAMIL · RESPONSIVE REFINEMENT */
-html,body{width:100%;max-width:100%;overflow-x:hidden}
-body{padding-bottom:calc(108px + env(safe-area-inset-bottom))}
-.app{width:100%;max-width:900px;padding-inline:clamp(12px,3.5vw,24px)}
-.topbar{height:82px;gap:12px}
-.brand{gap:10px;flex:0 1 auto}
-.brandmark{width:54px;height:54px;border-radius:18px}
-.brandmark svg{width:32px;height:32px}
-.brandname{font-size:clamp(24px,4vw,34px);letter-spacing:-1.2px;white-space:nowrap}
-.head-actions{gap:7px;flex:none}
-.icon-btn{width:46px;height:46px;border-radius:16px;font-size:21px}
-.icon-btn svg{width:21px;height:21px}
-.hero{padding:clamp(18px,3.5vw,30px) 0 10px}
-.hero h1{font-size:clamp(23px,5.6vw,38px);line-height:1.3;letter-spacing:-.35px;font-weight:850;max-width:100%;text-wrap:balance;overflow-wrap:normal}
-.search-wrap{margin:14px 0 18px}
-.search{height:56px;border-radius:18px;padding-left:52px;padding-right:14px;font-size:15px}
-.search-wrap svg{left:18px;width:21px;height:21px}
-.nav-grid{gap:9px;margin:0 0 22px}
-.nav-tile{height:auto;min-height:55px;padding:9px 8px;border-radius:17px;font-size:clamp(13px,3.1vw,15px);line-height:1.25;gap:7px;white-space:normal;text-align:center;overflow-wrap:anywhere}
-.nav-tile .nav-symbol{font-size:19px;line-height:1;flex:none}
-.section-head{gap:10px;align-items:center;margin-bottom:12px}
-.section-head h2{font-size:clamp(18px,4.6vw,23px);line-height:1.3;overflow-wrap:anywhere}
-.count{font-size:13px;line-height:1.4}
-.sort{max-width:145px;min-height:44px;padding:9px 25px 9px 10px;border-radius:14px;font-size:13px;white-space:normal}
-.station-list{gap:10px}
-.station{gap:10px;padding:10px;min-height:82px;border-radius:21px;align-items:center}
-.station-logo{width:54px;height:54px;border-radius:15px;font-size:21px}
-.station-name{font-size:15px;line-height:1.35;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:normal}
-.station-meta{font-size:12px;line-height:1.4;margin-top:4px;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
-.station-actions{gap:5px}
-.action-btn{width:38px;height:40px;border-radius:13px;font-size:19px}
-.action-btn svg{width:18px;height:18px}
-.bottom-player{gap:8px;padding:8px max(12px,calc((100vw - 864px)/2)) calc(8px + env(safe-area-inset-bottom));align-items:center}
-.mini-art{width:46px;height:46px;border-radius:15px;font-size:21px}
-.mini-info{flex:1 1 auto;min-width:0;align-self:center}
-.mini-title,.mini-status{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.3}
-.mini-title{font-size:13px;font-weight:800}
-.mini-status{font-size:11px;margin-top:3px}
-.mini-player-btn{width:42px;height:44px;border-radius:14px;font-size:19px}
-.modal{padding:clamp(16px,4vw,22px);border-radius:24px 24px 18px 18px}
-.modal-head h3{font-size:clamp(19px,4vw,23px);overflow-wrap:anywhere}
-.modal-head p,.setting-group p{line-height:1.55;overflow-wrap:anywhere}
-.setting-group h4,.field label{line-height:1.4;overflow-wrap:anywhere}
-.player-sheet h3,.player-sheet .muted{overflow-wrap:anywhere;white-space:normal}
-.toast{bottom:calc(92px + env(safe-area-inset-bottom));line-height:1.4;overflow-wrap:anywhere}
-
-/* At phone widths, give station names the full card width and put actions below. */
-@media(max-width:430px){
- .app{padding-inline:13px}
- .topbar{height:72px;gap:7px}
- .brand{gap:8px}
- .brandmark{width:47px;height:47px;border-radius:15px}
- .brandmark svg{width:29px;height:29px}
- .brandname{font-size:clamp(22px,6vw,27px);letter-spacing:-1px}
- .head-actions{gap:5px}
- .icon-btn{width:39px;height:40px;border-radius:14px}
- .icon-btn svg{width:19px;height:19px}
- .hero{padding:19px 0 8px}
- .hero h1{font-size:clamp(18px,5.2vw,23px);line-height:1.4;letter-spacing:-.15px}
- .search-wrap{margin:12px 0 16px}
- .search{height:53px;font-size:14px;padding-left:47px}
- .search-wrap svg{left:16px;width:19px;height:19px}
- .nav-grid{gap:8px;margin-bottom:19px}
- .nav-tile{min-height:51px;padding:8px 6px;border-radius:15px;font-size:clamp(12px,3.2vw,14px);gap:5px}
- .nav-tile .nav-symbol{font-size:17px}
- .action-btn.hide{display:grid}
- .section-head{align-items:flex-start}
- .section-head h2{font-size:19px}
- .sort{max-width:132px;min-height:41px;font-size:12px}
- .station{display:grid;grid-template-columns:48px minmax(0,1fr);grid-template-areas:"logo info" "actions actions";gap:8px 10px;padding:10px;border-radius:18px}
- .station-logo{grid-area:logo;width:48px;height:48px;border-radius:13px}
- .station-info{grid-area:info;width:100%;min-width:0}
- .station-name{font-size:14px;line-height:1.4}
- .station-meta{font-size:11px;line-height:1.4}
- .station-actions{grid-area:actions;justify-content:flex-end;gap:6px}
- .action-btn{width:36px;height:37px;border-radius:12px;font-size:18px}
- .bottom-player{gap:7px;padding:7px 9px calc(7px + env(safe-area-inset-bottom))}
- .mini-art{width:42px;height:42px;border-radius:13px;font-size:19px}
- .mini-title{font-size:12px}
- .mini-status{font-size:10px}
- .mini-player-btn{width:38px;height:40px;border-radius:12px;font-size:17px}
+/* SETTINGS PANEL: fixed, fully visible, and comfortably tappable */
+.modalbg {
+  position: fixed;
+  inset: 0;
+  padding: 12px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
 }
-@media(max-width:360px){
- .app{padding-inline:11px}
- .topbar{gap:5px}
- .brand{gap:6px}
- .brandmark{width:43px;height:43px;border-radius:14px}
- .brandname{font-size:22px;letter-spacing:-.8px}
- .head-actions{gap:4px}
- .icon-btn{width:35px;height:37px;border-radius:12px}
- .hero h1{font-size:18px;line-height:1.42}
- .nav-tile{min-height:49px;font-size:12px}
- .section-head{flex-wrap:wrap}
- .sort{max-width:none;width:auto;margin-left:0}
- .bottom-player{gap:6px;padding-inline:7px}
- .mini-art{width:38px;height:38px}
- .mini-player-btn{width:35px;height:37px}
+.modal {
+  width: min(430px, 100%);
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: 17px 18px;
+  border-radius: 20px;
 }
-@media(min-width:700px){
- .app{padding-inline:26px}
- .topbar{height:88px}
- .brandmark{width:58px;height:58px}
- .icon-btn{width:48px;height:48px}
- .hero{padding-top:34px;padding-bottom:18px}
- .nav-tile{min-height:60px}
- .station{padding:12px}
- .station-logo{width:60px;height:60px}
- .station-name{font-size:16px}
- .station-actions .action-btn{width:42px;height:43px}
- .mini-art{width:48px;height:48px}
- .mini-player-btn{width:44px;height:45px}
+.modal h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.modal > p {
+  margin: 0 0 9px;
+}
+.setting {
+  padding: 8px 0;
+  min-height: 43px;
+}
+.setting select {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+.setting .action,
+.setting button {
+  min-height: 40px;
+  padding: 8px 12px;
+}
+.about-credit {
+  margin-top: 10px;
+  padding: 11px 10px;
+}
+.about-note {
+  margin-top: 9px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.modalactions {
+  margin-top: 10px;
+}
+.modalactions .action {
+  min-height: 42px;
+  min-width: 82px;
 }
 
+.loading-pulse{display:inline-block;animation:airwavePulse 1.25s ease-in-out infinite}@keyframes airwavePulse{50%{opacity:.45}}
 
-.about-maker{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:12px}
-.about-maker strong{font-size:14px;font-weight:800;letter-spacing:.1px}
-.about-links{display:flex;flex-wrap:wrap;gap:9px}
-.about-links a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:10px 12px;font-size:13px;font-weight:750;min-height:42px}
-.about-links a span{color:var(--muted);font-weight:550}
-.about-links a:active{transform:scale(.98)}
+/* PLAYER + SETTINGS POLISH */
+.header{position:sticky;top:0;z-index:12;margin:0 -16px 18px;padding:12px 16px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid color-mix(in srgb,var(--line) 75%,transparent)}
+@media(max-width:650px){.header{margin:0 -12px 16px;padding:10px 12px}}
+.nav{flex-wrap:wrap;overflow:visible}
+.modalbg{align-items:center}
+.modal{display:flex;flex-direction:column;width:min(470px,100%);max-height:min(88dvh,760px);padding:0;overflow:hidden}
+.settingshead{position:sticky;top:0;z-index:2;padding:19px 19px 13px;background:var(--surface);border-bottom:1px solid var(--line)}
+.settingshead h3{margin:0 0 4px;font-size:19px}.settingshead p{margin:0;color:var(--muted);font-size:12px}
+.settings-scroll{overflow:auto;overscroll-behavior:contain;padding:0 19px;flex:1;min-height:0}
+.settings-footer{position:sticky;bottom:0;z-index:2;padding:12px 19px calc(12px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line)}
+.settings-footer .action{width:100%;min-height:46px}
+.hidden-setting-head{display:block}.hidden-setting-head>div{display:flex;justify-content:space-between;align-items:center;width:100%}.hidden-setting-head small{color:var(--muted);font-size:11px}
+.hidden-station-manager{display:grid;gap:7px;padding:0 0 12px}
+.hidden-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);background:var(--surface2);border-radius:12px;min-width:0}
+.hidden-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:650}
+.hidden-row button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:7px 10px;font-size:11px}
+.hidden-empty{font-size:12px;color:var(--muted);padding:9px 0 13px}
+.player{z-index:15;cursor:pointer}.playerin{cursor:pointer}.playerin button{position:relative;z-index:2;flex:none}.track{cursor:pointer}
+.sheetbg{position:fixed;inset:0;z-index:25;background:#0009;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.sheetbg.open{display:flex}.playersheet{width:min(620px,100%);max-height:min(92dvh,850px);overflow:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:26px 26px 0 0;padding:10px 22px calc(22px + env(safe-area-inset-bottom));text-align:center;box-shadow:0 -20px 70px #0006;animation:sheetUp .24s ease-out}
+@keyframes sheetUp{from{transform:translateY(35px);opacity:.7}to{transform:translateY(0);opacity:1}}
+.sheetgrab{width:42px;height:4px;border-radius:9px;background:var(--muted);opacity:.45;margin:0 auto 13px}
+.sheethead{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:1.8px}
+.sheetclose{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:50%;width:34px;height:34px;font-size:21px}
+.sheetart{width:clamp(150px,48vw,230px);aspect-ratio:1;margin:20px auto 17px;border-radius:25px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(140deg,var(--accent),var(--mint));color:#111;font-size:68px;box-shadow:0 15px 50px #0003}
+.sheetart img{width:100%;height:100%;object-fit:cover}
+.playersheet h2{font-size:clamp(20px,5vw,27px);margin:0 0 4px;letter-spacing:-.5px}.playersheet>p{color:var(--muted);margin:0;font-size:12px}
+.livepill{display:inline-flex;margin:13px auto 0;padding:6px 10px;border-radius:30px;background:color-mix(in srgb,var(--mint) 14%,var(--surface2));color:var(--mint);font-size:10px;font-weight:850;letter-spacing:1px}
+.trackmeta{min-height:42px;display:grid;place-items:center;color:var(--muted);font-size:12px;margin:10px 0 14px}
+.sheetcontrols{display:flex;gap:10px;justify-content:center}.sheetcontrols button{min-height:48px;padding:0 18px;border-radius:14px;border:1px solid var(--line);font-weight:750}.sheetcontrols .primary{background:var(--accent);color:#111;border-color:transparent;min-width:130px}.sheetcontrols .secondary{background:var(--surface2);color:var(--text)}
+.sleepbox{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:14px 0;margin-top:13px;border-top:1px solid var(--line)}.sleepbox strong,.sleepbox small{display:block}.sleepbox strong{font-size:13px}.sleepbox small{font-size:11px;color:var(--muted);margin-top:3px}.sleepbox select{max-width:155px;background:var(--surface2);border:1px solid var(--line);color:var(--text);padding:10px;border-radius:11px}
+.stationdetails{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;padding-top:8px}.stationdetails span{background:var(--surface2);border:1px solid var(--line);border-radius:30px;padding:6px 10px;color:var(--muted);font-size:10px}
+@media(min-width:700px){.sheetbg{align-items:center;padding:20px}.playersheet{border-radius:26px;max-height:90vh}.sheetart{width:190px}}
 
-</style>
-</head>
-<body data-theme="forest">
+
+/* ==========================================================
+   AIRWAVE POLISH · SETTINGS + EXPANDED PLAYER
+   ========================================================== */
+.modalbg{padding:12px;align-items:center}
+.modal{width:min(500px,100%);height:min(86dvh,760px);max-height:86dvh;padding:0;display:flex;flex-direction:column;overflow:hidden;border-radius:24px}
+.settingshead{flex:none;padding:18px 20px 14px}
+.settingshead h3{font-size:20px}
+.settingshead p{font-size:13px}
+.settings-scroll{padding:0 20px 12px;overflow-y:auto;flex:1;min-height:0}
+.setting{padding:14px 0;gap:14px}
+.setting label{font-size:14px;line-height:1.4}
+.setting select{min-height:42px;font-size:13px}
+.settings-footer{flex:none;padding:10px 20px calc(10px + env(safe-area-inset-bottom))}
+.settings-footer .action{width:auto;min-width:112px;min-height:42px;padding:9px 20px;font-size:14px}
+.hidden-settings{border-top:1px solid var(--line);padding:0}
+.hidden-settings summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;cursor:pointer;font-size:14px}
+.hidden-settings summary::-webkit-details-marker{display:none}
+.hidden-settings summary:after{content:"⌄";color:var(--muted);font-size:18px;margin-left:8px}
+.hidden-settings[open] summary:after{content:"⌃"}
+.hidden-settings summary small{margin-left:auto;color:var(--muted);font-size:12px}
+.hidden-station-manager{padding:0 0 12px;max-height:220px;overflow:auto}
+.hidden-row{padding:8px 10px}
+.hidden-empty{padding:7px 0 10px}
+.playerin{min-height:62px}
+.mini-eq{display:none;align-items:flex-end;gap:2px;height:12px;margin-right:6px;vertical-align:middle}
+.mini-eq i{display:block;width:3px;height:4px;border-radius:3px;background:var(--mint)}
+#miniPlayer.is-playing .mini-eq{display:inline-flex}
+#miniPlayer.is-playing .mini-eq i{animation:eqBounce .72s ease-in-out infinite alternate}
+#miniPlayer.is-playing .mini-eq i:nth-child(2){animation-delay:.18s}
+#miniPlayer.is-playing .mini-eq i:nth-child(3){animation-delay:.36s}
+@keyframes eqBounce{from{height:3px}to{height:12px}}
+.sheetbg{touch-action:pan-y}
+.playersheet{padding:12px 22px calc(22px + env(safe-area-inset-bottom));gap:0}
+.sheethead{min-height:38px}
+.sheetclose{width:42px;height:42px;font-size:24px;cursor:pointer}
+.sheetart{width:clamp(145px,42vw,205px);margin:13px auto 14px;border-radius:24px}
+.playersheet h2{font-size:clamp(21px,5vw,27px)}
+.livepill{margin-top:10px}
+.sheetcontrols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0 14px}
+.sheetcontrols button{min-width:0;min-height:58px;padding:0 8px;border-radius:16px;font-size:21px;touch-action:manipulation}
+.sheetcontrols .primary{min-width:0;font-size:22px}
+.sleepbox{display:block;padding:14px 0;margin-top:5px;border-top:1px solid var(--line);text-align:left}
+.sleep-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.sleep-title strong{font-size:14px}
+.sleep-title small{font-size:12px;color:var(--muted)}
+.sleep-control{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+.sleep-control label{font-size:13px;font-weight:750;min-width:48px}
+.sleep-control input{width:100%;accent-color:var(--accent);min-height:30px}
+.sleep-action{min-width:76px;min-height:42px;padding:8px 13px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-weight:750}
+.stationdetails{padding-top:10px}
+@media(max-height:720px){
+ .playersheet{max-height:96dvh;overflow-y:auto}
+ .sheetart{width:112px;margin:8px auto}
+ .sheetcontrols{margin:13px 0 8px}
+ .sleepbox{padding:9px 0}
+}
+
+/* PLAYER + SETTINGS REFINEMENT */
+.modal{width:min(500px,100%);height:min(86dvh,760px);max-height:86dvh;padding:0;display:flex;flex-direction:column;overflow:hidden;border-radius:24px}
+.settingshead{flex:none}
+.settings-scroll{flex:1;min-height:0;overflow-y:auto}
+.settings-footer{position:static;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:7px;padding:10px 20px calc(10px + env(safe-area-inset-bottom))}
+.settings-footer .action{width:auto;min-width:88px;min-height:40px;padding:8px 18px;font-size:13px}
+.creator-credit{align-self:stretch;text-align:center;color:var(--muted);font-size:12px;padding:2px 0 0}
+.creator-credit strong{color:var(--text)}
+.creator-credit span{color:var(--pink)}
+.about-modal{width:min(460px,100%)}
+.about-brand{text-align:center;font-size:35px;font-weight:900;letter-spacing:-1.5px;margin:22px 0 8px}
+.about-brand span{color:var(--accent)}
+.about-copy{text-align:center;color:var(--muted);font-size:14px;line-height:1.65;max-width:320px;margin:0 auto 24px}
+.about-links{display:grid;gap:10px}
+.about-links a{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 15px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--text);text-decoration:none;font-size:14px}
+.about-links a strong{color:var(--accent)}
+.about-credit{margin-top:20px}
+.sheetcontrols{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px!important;width:100%;margin:20px 0 13px!important}
+.sheetcontrols button{width:100%;min-width:0!important;max-width:none;min-height:64px!important;height:64px;padding:0!important;border-radius:17px!important;font-size:23px!important;display:grid;place-items:center;line-height:1;overflow:hidden}
+#sheetFav{font-size:25px!important}
+#sheetHide{font-size:25px!important}
+#sheetToggle{font-size:25px!important}
+.sheetcontrols button:disabled{opacity:.4}
+@media(max-width:390px){.sheetcontrols{gap:6px!important}.sheetcontrols button{min-height:56px!important;height:56px;font-size:20px!important}}
+
+/* COMPACT FILTERS, PICKERS, SHARE + ABOUT */
+.compact-filters{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:8px!important}
+.filterpick{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;min-height:48px;padding:0 10px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--text);font-size:12px;font-weight:750;white-space:nowrap}
+.filterpick span{overflow:hidden;text-overflow:ellipsis}
+.filterpick b{font-size:16px;font-weight:900;color:var(--muted)}
+.genre-pick{grid-column:auto}
+.iconbtn,.smallbtn,.player button,.sheetcontrols button,.action,.nav button,.filterpick{font-weight:900}
+.iconbtn{font-size:21px;text-shadow:0 0 .5px currentColor}
+.settings-footer{flex-direction:row!important;align-items:center!important;justify-content:space-between!important}
+.creator-credit{align-self:auto!important;text-align:left!important;font-size:15px!important;font-weight:800!important;color:var(--text)!important}
+.creator-credit strong{font-size:16px}
+.settings-footer .action{order:2}
+.creator-credit{order:1}
+.about-section{margin:18px 0}
+.about-section h4{font-size:14px;margin:0 0 8px}
+.about-section ul{padding-left:19px;margin:0;color:var(--muted);font-size:13px;line-height:1.75}
+.about-links{display:grid;gap:8px}
+.easter-hint{font-size:11px;color:var(--muted);text-align:center;margin:18px 0 6px}
+.easter-reveal{padding:12px;border-radius:12px;background:var(--surface2);text-align:center;font-weight:750;color:var(--accent);margin-top:8px}
+.picker-backdrop{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;padding:18vh 14px 14px;background:#0008}
+.picker-backdrop.open{display:flex}
+.picker-pop{width:min(390px,100%);max-height:min(440px,65dvh);display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+.picker-top{display:flex;justify-content:space-between;align-items:center}
+.picker-top strong{font-size:15px}
+.picker-top button{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);font-size:21px}
+#pickerSearch{width:100%;min-height:42px;padding:0 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--text)}
+.alphabet{display:flex;flex-wrap:wrap;gap:4px}
+.alphabet button{min-width:25px;height:27px;padding:0 5px;border:0;border-radius:7px;background:var(--surface2);color:var(--text);font-size:11px;font-weight:800}
+.alphabet button.active{background:var(--accent);color:#111}
+.picker-options{overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:5px;min-height:50px}
+.picker-options button{min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--text);text-align:left;font-size:12px}
+.picker-options button.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface2))}
+@media(max-width:390px){.compact-filters{gap:5px!important}.filterpick{padding:0 7px;font-size:11px;min-height:44px}.filterpick b{font-size:14px}}
+
+/* CLEAN PLAYER CONTROLS */
+.sheetcontrols{display:block!important;width:100%;margin:20px 0 16px!important}
+.player-control-layout{display:grid;gap:11px;width:100%}
+.transport-controls{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px}
+.transport-controls button{width:100%;height:66px;min-height:66px;border-radius:17px;font-size:28px;font-weight:900;display:grid;place-items:center;line-height:1}
+.transport-controls #sheetToggle{font-size:25px}
+.station-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.station-actions button{width:100%;min-height:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:21px;font-weight:800}
+.station-actions button small{font-size:13px;font-weight:750}
+.station-actions button span{font-size:23px;line-height:1}
+.transport-controls button:disabled,.station-actions button:disabled{opacity:.42}
+.about-credit{margin-top:20px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);font-size:17px;font-weight:800;text-align:center}
+.about-credit strong{color:var(--accent)}
+.about-credit span{color:var(--pink)}
+.development-credit{text-align:center;color:var(--muted);font-size:11px;margin:8px 0 2px}
+@media(max-width:390px){
+ .transport-controls{gap:9px}
+ .transport-controls button{height:60px;min-height:60px}
+ .station-actions{gap:9px}
+}
+
+/* AIRWAVE · CLEAN SYSTEM UI */
+:root{--control-radius:14px}
+.header .iconbtn{display:grid;place-items:center}
+.header .iconbtn svg{width:22px;height:22px;stroke-width:2.15}
+.head-actions{gap:9px}
+.iconbtn{border-radius:15px}
+.filterpick{font-size:12px;font-weight:650}
+.filterpick>svg{width:16px;height:16px;flex:none}
+.modal{width:min(500px,100%);height:min(88dvh,780px);max-height:88dvh;padding:0;display:flex;flex-direction:column;overflow:hidden;border-radius:23px}
+.settingshead{padding:21px 22px 17px;border-bottom:1px solid var(--line);background:var(--surface)}
+.settingshead h3{font-size:20px;letter-spacing:-.35px}
+.settingshead p{font-size:13px;margin-top:5px}
+.settings-scroll{padding:4px 22px 22px;overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0}
+.settings-group{padding:17px 0 5px;border-bottom:1px solid var(--line)}
+.settings-group:last-child{border-bottom:0}
+.settings-group>h4{margin:0 0 8px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1.25px;text-transform:uppercase}
+.setting{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
+.setting:last-child{border-bottom:0}
+.setting-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.setting-copy label{font-size:14px;font-weight:650;line-height:1.3}
+.setting-copy small{font-size:11px;line-height:1.45;color:var(--muted)}
+.setting select{width:142px;max-width:42vw;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--text);font-size:12px}
+.setting .action{min-width:86px;min-height:40px;padding:8px 12px;border-radius:11px;font-size:12px;white-space:nowrap}
+.setting-value{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+.hidden-settings{border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
+.hidden-settings summary{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:10px;padding:13px 0;list-style:none;cursor:pointer}
+.hidden-settings summary::-webkit-details-marker{display:none}
+.disclosure{font-size:17px;color:var(--muted);font-weight:500}
+.hidden-settings[open] .disclosure{transform:rotate(180deg)}
+.hidden-station-manager{padding:0 0 12px;max-height:200px;overflow:auto}
+.hidden-row{background:var(--surface2);border-color:var(--line)}
+.danger-action{color:#ef9292!important}
+.contact-group{padding-bottom:18px}
+.contact-name{font-size:20px;font-weight:800;letter-spacing:-.4px;margin:7px 0 12px}
+.contact-name span{color:var(--pink)}
+.contact-links{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.contact-links a{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--text);text-decoration:none}
+.contact-links a>span:last-child{display:grid;gap:2px}
+.contact-links b{font-size:12px}
+.contact-links small{font-size:10px;color:var(--muted)}
+.contact-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--surface);font-size:17px}
+.settings-footer{flex:none;display:flex;justify-content:flex-end;align-items:center;padding:12px 22px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+.settings-footer .action{width:auto;min-width:92px;min-height:40px;padding:8px 18px;font-size:13px}
+.about-modal{width:min(500px,100%)}
+.about-brand{font-size:32px;letter-spacing:-1.3px}
+.about-section{padding:15px 0;margin:0;border-bottom:1px solid var(--line)}
+.about-section h4{font-size:13px;letter-spacing:.1px;margin:0 0 7px}
+.about-section p,.about-section li{font-size:12px;line-height:1.7;color:var(--muted)}
+.about-section p{margin:0 0 8px}
+.about-section ul{padding-left:18px;margin:0}
+.about-section a{color:var(--accent)}
+.development-credit{font-size:11px;color:var(--muted);margin-top:10px}
+@media(max-width:420px){
+ .settings-scroll{padding-left:18px;padding-right:18px}
+ .settingshead{padding-left:18px;padding-right:18px}
+ .settings-footer{padding-left:18px;padding-right:18px}
+ .setting{gap:9px}
+ .setting-copy label{font-size:13px}
+ .setting-copy small{font-size:10px}
+ .setting select{width:128px}
+ .contact-links{gap:7px}
+}
+
+/* AIRWAVE FINAL · PLAYER / FILTER / SETTINGS FOOTER */
+.player-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;margin:20px 0 17px}
+.player-action{appearance:none;-webkit-appearance:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;width:100%;min-width:0;height:76px;min-height:76px;padding:8px 5px;border:1px solid var(--line);border-radius:16px;background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px;font-weight:750;line-height:1.1;box-shadow:none;cursor:pointer;touch-action:manipulation}
+.player-action .action-icon{display:grid;place-items:center;height:27px;font-size:25px;line-height:1}
+.player-action .action-label{font-size:12px;white-space:nowrap}
+.player-action.player-play{background:var(--accent);border-color:transparent;color:#171322}
+.player-action:disabled{opacity:.42}
+.player-action:active{transform:scale(.97)}
+.transport-controls,.station-actions{display:none!important}
+.settings-footer{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom))!important}
+.footer-identity{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0}
+.footer-identity>strong{font-size:14px;font-weight:850;white-space:nowrap;color:var(--text)}
+.footer-identity>strong span{color:var(--pink)}
+.footer-contacts{display:flex;gap:7px}
+.footer-contacts a{display:flex;align-items:center;gap:6px;min-height:32px;padding:5px 9px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap}
+.contact-symbol{font-size:14px;color:var(--muted);font-weight:800}
+.settings-footer #close{width:auto!important;min-width:82px!important;min-height:42px!important;padding:8px 17px!important;flex:none}
+.compact-filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 34px!important;gap:7px!important;align-items:center}
+.compact-filters .filterpick{min-width:0;width:100%;min-height:43px;padding:0 8px;font-size:11px}
+.compact-filters .filterpick span{min-width:0}
+.compact-filters .compact-reset{display:grid;place-items:center;width:34px;height:34px;min-height:34px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--muted);font-size:21px;font-weight:700;line-height:1}
+.filter-tools{display:none!important}
+@media(max-width:390px){
+ .player-actions{gap:7px;margin:17px 0 14px}
+ .player-action{height:68px;min-height:68px;border-radius:14px}
+ .player-action .action-label{font-size:11px}
+ .footer-identity>strong{font-size:12px}
+ .footer-contacts a{gap:4px;padding:5px 7px;font-size:10px}
+ .settings-footer{padding-left:12px!important;padding-right:12px!important}
+ .compact-filters{gap:5px!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 31px!important}
+ .compact-filters .filterpick{padding:0 6px;font-size:10px}
+ .compact-filters .compact-reset{width:31px;height:31px}
+}
+
+/* Smooth player sheet motion */
+.sheetbg{opacity:0;transition:opacity .2s ease;backdrop-filter:blur(5px)}
+.sheetbg.open{opacity:1}
+.playersheet{transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.78,.25,1);will-change:transform}
+.sheetbg.open .playersheet{transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.sheetbg,.playersheet{transition:none!important}}
+
+/* SHARE PREVIEW + PLAYER TRANSPORT + BACK TO TOP */
+.transport-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;margin:20px 0 12px}
+.transport-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-width:0;height:70px;border:1px solid var(--line);border-radius:15px;background:var(--surface2);color:var(--text);font-family:inherit;font-size:23px;font-weight:700;line-height:1;box-shadow:none;cursor:pointer;touch-action:manipulation}
+.transport-button small{font-size:11px;font-weight:700;line-height:1.1;color:var(--muted)}
+.transport-button.transport-main{background:var(--accent);border-color:transparent;color:#171322}
+.transport-button.transport-main small{color:#171322}
+.transport-button:disabled{opacity:.38}
+.transport-button:active{transform:scale(.97)}
+.player-secondary-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 17px}
+.player-secondary-actions .player-action{height:60px;min-height:60px;flex-direction:row;gap:9px}
+.player-secondary-actions .player-action .action-icon{height:auto;font-size:22px}
+.player-secondary-actions .player-action .action-label{font-size:12px}
+.back-to-top{position:fixed;right:18px;bottom:calc(104px + env(safe-area-inset-bottom));z-index:60;display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--text);box-shadow:0 8px 24px #0004;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;cursor:pointer}
+.back-to-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
+.back-to-top:active{transform:scale(.94)}
+@media(max-width:390px){.transport-row{gap:7px}.transport-button{height:65px;border-radius:13px}.player-secondary-actions{gap:7px}}
+@media(prefers-reduced-motion:reduce){.back-to-top{transition:none}}
+
+/* AIRWAVE REFINEMENTS · hero, mini-player and share preview */
+.hero { margin-bottom: 27px; }
+.hero h2 { margin-bottom: 0; }
+.controls { padding-top: 15px; }
+.playerin { gap: 11px; }
+.cover { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; overflow: hidden; }
+.cover img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.track { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.track b, .track small { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#miniPlayerOpen { min-width: 0; }
+#miniCover, #trackname { cursor: pointer; }
+
+
+/* SMALL POLISH + CROSS-DEVICE TOUCH BEHAVIOUR */
+html, body, button, a, input, select, textarea, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+button, a, [role="button"] { touch-action: manipulation; }
+button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.back-to-top {
+  z-index: 18;
+  pointer-events: none;
+}
+.back-to-top.visible { pointer-events: auto; }
+.back-to-top:active {
+  background: color-mix(in srgb, var(--accent) 13%, var(--surface2));
+  transform: scale(.96);
+}
+.about-modal .settings-footer {
+  justify-content: flex-end !important;
+}
+
+/* TAMIL EDITION · SCRIPT-FRIENDLY TYPE + READABLE RESPONSIVE TEXT */
+.hero h2{font-size:clamp(28px,5.4vw,42px);line-height:1.2;letter-spacing:0;max-width:780px;overflow-wrap:anywhere}
+.name{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35}
+.meta{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.45}
+.track b,.track small{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35}
+.playerin{min-height:62px;gap:10px}
+.nav button{white-space:normal;line-height:1.25;min-height:48px}
+.transport-button small{font-size:12px;line-height:1.25}
+.about-links{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px}
+.about-links a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border:1px solid var(--line);border-radius:13px;background:var(--surface2);color:var(--text);text-decoration:none;font-size:13px}
+.about-links a strong{font-size:13px;font-weight:750}
+@media(max-width:390px){.hero h2{font-size:clamp(27px,7vw,32px);line-height:1.22}.rowhead{align-items:flex-start}.sort{max-width:132px}.playerin{gap:7px}.cover{width:42px;height:42px;flex-basis:42px}.player button{width:42px;height:42px}}
+
+</style></head>
+<body>
 <div class="app">
-<header class="topbar">
-  <div class="brand" aria-label="Airwave Tamil">
-    <div class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M5 22c4.8 0 4.8 10 9.6 10s4.8-10 9.6-10 4.8 10 9.6 10 4.8-10 9.6-10" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></div>
-    <div class="brandname">Airwave<span>.</span></div>
+<header class="header"><div class="brand"><div class="mark">〰</div><div><h1>Airwave<span style="color:var(--accent)">.</span></h1></div></div><div class="head-actions"><button class="iconbtn" id="settings" title="Settings"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.6v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.3v-2.6h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2H15v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button class="iconbtn" id="share" title="Share Airwave" aria-label="Share Airwave"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4"/></svg></button></div></header>
+<section class="hero"><h2 id="heroTitle">உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.</h2></section>
+<section class="controls">
+<label class="search"><span aria-hidden="true">⌕</span><input id="query" type="search" placeholder="தமிழ் வானொலிகளைத் தேடுங்கள்…" autocomplete="off" aria-label="தமிழ் வானொலிகளைத் தேடுங்கள்"></label>
+</section>
+<nav class="nav" aria-label="வானொலி பார்வைகள்"><button class="active" data-view="all">ஆராயுங்கள்</button><button data-view="favs">♡ விருப்பமானவை</button><button data-view="recent">◷ சமீபத்தியவை</button><button id="surprise">✧ ஆச்சரியத் தேர்வு</button></nav>
+<div class="rowhead"><div><h3 id="heading">தமிழ் வானொலிகள்</h3><small id="count">வானொலிகள் ஏற்றப்படுகின்றன…</small></div><select class="sort" id="sort" aria-label="வரிசை"><option value="name">பெயர்: A–Z</option><option value="reverse">பெயர்: Z–A</option><option value="random">கலக்கு</option></select></div>
+<div class="stationlist" id="list"><div class="empty" id="loadingState"><span class="loading-pulse">தமிழ் வானொலிகள் தயாராகின்றன…</span></div></div><button class="more" id="more" hidden>மேலும் காட்டு</button>
+</div>
+<div class="player" id="miniPlayer"><div class="playerin" id="miniPlayerOpen" role="button" tabindex="0" aria-label="Expand player"><div class="cover" id="miniCover">♫</div><div class="track"><b id="trackname">Nothing playing yet</b><small><span class="mini-eq" id="miniEq" aria-hidden="true"><i></i><i></i><i></i></span><span id="trackstate">Choose a station to start listening</span></small></div><button class="secondary" id="playerfav" disabled aria-label="Favourite station">♡</button><button id="toggle" disabled aria-label="Play or pause">▶</button></div><audio id="audio" preload="none"></audio></div>
+<div class="sheetbg" id="playerSheetBg"><section class="playersheet" id="playerSheet" role="dialog" aria-modal="true" aria-label="Now playing"><div class="sheethead"><span id="sheetNowPlayingLabel">NOW PLAYING</span><button class="sheetclose" id="playerSheetClose" aria-label="Close player">⌄</button></div><div class="sheetart" id="sheetArt">♫</div><h2 id="sheetStation">Nothing playing yet</h2><p id="sheetSubtitle">Choose a station to start listening</p><div class="livepill" id="livePill">● LIVE RADIO</div><div class="transport-row">
+  <button class="transport-button" id="sheetPrev" disabled aria-label="Previous station" title="Previous station"><span aria-hidden="true">⏮</span><small id="sheetPrevLabel">Previous</small></button>
+  <button class="transport-button transport-main" id="sheetToggle" disabled aria-label="Play or pause"><span class="action-icon" aria-hidden="true">▶</span><small class="action-label">Play</small></button>
+  <button class="transport-button" id="sheetNext" disabled aria-label="Next station" title="Next station"><span aria-hidden="true">⏭</span><small id="sheetNextLabel">Next</small></button>
+</div>
+<div class="player-actions player-secondary-actions">
+  <button class="player-action" id="sheetHide" disabled aria-label="Block station" title="Block station"><span class="action-icon" aria-hidden="true">⊘</span><span class="action-label" id="sheetHideLabel">Block</span></button>
+  <button class="player-action" id="sheetFav" disabled aria-label="Add to favourites" title="Favourite"><span class="action-icon" aria-hidden="true">♡</span><span class="action-label" id="sheetFavLabel">Favourite</span></button>
+</div><div class="sleepbox"><div class="sleep-title"><strong id="sleepTitle">Sleep timer</strong><small id="sleepStatus">Off · Keep listening</small></div><div class="sleep-control"><label for="sleepTimer"><span id="sleepMinutes">15 min</span></label><input id="sleepTimer" type="range" min="5" max="60" step="5" value="15"><button class="sleep-action" id="sleepAction">Start</button></div></div><div class="stationdetails" id="sheetDetails"></div></section></div>
+<div class="modalbg" id="settingsbg"><div class="modal settings-modal">
+  <div class="settingshead"><div><h3 id="settingsTitle">அமைப்புகள்</h3><p id="settingsSubtitle">உங்கள் வானொலி அனுபவத்தை அமைக்கவும்.</p></div></div>
+  <div class="settings-scroll">
+    <section class="settings-group"><h4 id="personaliseHeading">தனிப்பயனாக்கம்</h4>
+      <div class="setting"><div class="setting-copy"><label for="theme" id="themeLabel">தோற்றம்</label><small id="themeHint">வண்ணத் தோற்றத்தைத் தேர்ந்தெடுக்கவும்</small></div><select id="theme"><option value="midnight">நள்ளிரவு ஊதா</option><option value="amoled">AMOLED கருப்பு</option><option value="ocean">கடல் நீலம்</option><option value="light">ஒளிர்வு</option><option value="forest">பசுமை</option></select></div>
+      <div class="setting"><div class="setting-copy"><label for="uilang" id="languageLabel">இடைமுக மொழி</label><small id="languageHint">பயன்பாட்டின் மொழியை மாற்றவும்</small></div><select id="uilang"><option value="ta">தமிழ்</option><option value="en">English</option></select></div>
+    </section>
+    <section class="settings-group"><h4 id="stationsHeading">வானொலிகள்</h4>
+      <div class="setting"><div class="setting-copy"><label id="catalogueLabel">வானொலி பட்டியல்</label><small id="catalogueHint">இந்த பதிப்பில் உள்ள வானொலிகள்</small></div><span class="setting-value" id="dbinfo">286 வானொலிகள்</span></div>
+      <details class="hidden-settings"><summary><span class="setting-copy"><label id="hiddenLabel">மறைக்கப்பட்ட வானொலிகள்</label><small id="hiddenHint">மறைத்த வானொலிகளை மீட்டெடுக்கவும்</small></span><span class="setting-value" id="hiddenCount">0 மறைக்கப்பட்டவை</span><b class="disclosure">⌄</b></summary><div id="hiddenStationManager" class="hidden-station-manager"></div></details>
+    </section>
+    <section class="settings-group"><h4 id="backupHeading">காப்புப்பிரதி மற்றும் தரவு</h4>
+      <div class="setting"><div class="setting-copy"><label id="importLabel">காப்புப்பிரதியை இறக்குமதி</label><small id="importHint">சேமித்த விருப்பமான வானொலிகளை இணைக்கவும்</small></div><button class="action secondary" id="import2">இறக்குமதி</button></div>
+      <div class="setting"><div class="setting-copy"><label id="exportLabel">காப்புப்பிரதியை ஏற்றுமதி</label><small id="exportHint">உங்கள் விருப்பமான வானொலிகளைச் சேமிக்கவும்</small></div><button class="action secondary" id="export2">ஏற்றுமதி</button></div>
+      <div class="setting"><div class="setting-copy"><label id="clearLabel">சேமித்த தரவை நீக்கு</label><small id="clearHint">விருப்பமானவை, மறைக்கப்பட்டவை மற்றும் வரலாற்றை நீக்கும்</small></div><button class="action secondary danger-action" id="clear">நீக்கு</button></div>
+    </section>
+    <section class="settings-group"><h4 id="aboutHeading">பற்றி</h4>
+      <div class="setting"><div class="setting-copy"><label id="aboutLabel">Airwave Tamil பற்றி</label><small id="aboutHint">பயன்பாட்டைப் பற்றியும் அதன் அம்சங்களையும் அறியவும்</small></div><button class="action secondary" id="openAbout">வழிகாட்டி</button></div>
+    </section>
   </div>
-  <div class="head-actions">
-    <button class="icon-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.4 13.5 1.1.8-1.5 2.6-1.3-.5a7.8 7.8 0 0 1-1.7 1l-.2 1.4h-3l-.3-1.4a7.8 7.8 0 0 1-1.7-1l-1.3.5-1.5-2.6 1.1-.8a7 7 0 0 1 0-2l-1.1-.8 1.5-2.6 1.3.5a7.8 7.8 0 0 1 1.7-1l.3-1.4h3l.2 1.4a7.8 7.8 0 0 1 1.7 1l1.3-.5 1.5 2.6-1.1.8a7 7 0 0 1 0 2Z"/></svg></button>
-    <button class="icon-btn" id="shareBtn" type="button" aria-label="Share" title="Share"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></svg></button>
-  </div>
-</header>
-<main>
-  <section class="hero">
-    <h1 data-i18n="heroTitle">உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.</h1>
-  </section>
-  <div class="search-wrap">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
-    <input class="search" id="search" type="search" autocomplete="off" placeholder="வானொலியைத் தேடுங்கள்..." data-i18n-placeholder="searchPlaceholder" aria-label="Search Tamil stations">
-  </div>
-  <nav class="nav-grid" aria-label="Station views">
-    <button class="nav-tile active" data-view="explore"><span class="nav-symbol">⌕</span><span data-i18n="explore">ஆராயுங்கள்</span></button>
-    <button class="nav-tile" data-view="favs"><span class="nav-symbol">♡</span><span data-i18n="favourites">விருப்பமானவை</span></button>
-    <button class="nav-tile" data-view="recent"><span class="nav-symbol">◷</span><span data-i18n="recent">சமீபத்தியவை</span></button>
-    <button class="nav-tile" id="surpriseBtn"><span class="nav-symbol">✧</span><span data-i18n="surprise">ஆச்சரியப்படுத்து</span></button>
-  </nav>
-  <section aria-labelledby="sectionTitle">
-    <div class="section-head">
-      <div><h2 id="sectionTitle" data-i18n="exploreTamil">தமிழ் வானொலிகள்</h2><div class="count" id="stationCount" aria-live="polite">வானொலிகளை ஏற்றுகிறது…</div></div>
-      <label class="sr-only" for="sort" data-i18n="sort">Sort stations</label>
-      <select id="sort" class="sort" aria-label="Sort stations"><option value="asc">பெயர்: அ–ஔ</option><option value="desc">பெயர்: ஔ–அ</option></select>
+  <div class="settings-footer">
+    <div class="footer-identity"><strong id="creatorText">உருவாக்கியவர்: பிரசன்னா <span>❤️</span></strong>
+      <div class="footer-contacts"><a href="https://t.me/prasannaone" target="_blank" rel="noopener" aria-label="டெலிகிராம் @prasannaone"><span class="contact-symbol">↗</span><span id="telegramFooterText">டெலிகிராம்</span></a></div>
     </div>
-    <div id="stationList" class="station-list"><div class="loading" data-i18n="loading">தமிழ் வானொலிகள் தயாராகின்றன…</div></div>
-    <button id="loadMore" class="load-more" hidden data-i18n="loadMore">மேலும் காட்டு</button>
-  </section>
-  <div class="footer-note"><span data-i18n="catalogueCredit">வானொலி பட்டியல்</span> · <a href="https://www.radio-browser.info/" target="_blank" rel="noopener">Radio Browser</a></div>
-</main>
-</div>
-<audio id="audio" preload="none"></audio>
-<div class="bottom-player" id="bottomPlayer">
-  <div class="mini-art" id="miniArt" aria-hidden="true">♫</div>
-  <div class="mini-info" id="openPlayer" role="button" tabindex="0" aria-label="Open player">
-    <div class="mini-title" id="miniTitle" data-i18n="nothingPlaying">இன்னும் எதுவும் ஒலிக்கவில்லை</div>
-    <div class="mini-status" id="miniStatus" data-i18n="chooseStation">கேட்க ஒரு வானொலியைத் தேர்ந்தெடுங்கள்</div>
+    <button class="action" id="close">முடிந்தது</button>
   </div>
-  <button class="mini-player-btn" id="miniFav" type="button" disabled aria-label="Favourite">♡</button>
-  <button class="mini-player-btn play" id="miniPlay" type="button" disabled aria-label="Play">▶</button>
-</div>
-
-<div class="modal-backdrop" id="settingsModal" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-  <div class="modal-head"><div><h3 id="settingsTitle" data-i18n="settings">அமைப்புகள்</h3><p data-i18n="personalise">உங்கள் வானொலி அனுபவத்தை மாற்றுங்கள்.</p></div><button class="close-btn" data-close="settingsModal" aria-label="Close">×</button></div>
-  <div class="setting-group"><h4 data-i18n="interfaceLanguage">இடைமுக மொழி</h4><select id="languageSelect" class="setting-select"><option value="ta">தமிழ்</option><option value="en">English</option></select></div>
-  <div class="setting-group"><h4 data-i18n="theme">தோற்றம்</h4><select id="themeSelect" class="setting-select"><option value="forest">Forest</option><option value="midnight">Midnight Purple</option><option value="amoled">AMOLED Black</option><option value="ocean">Ocean</option><option value="light">Light</option></select></div>
-  <div class="setting-group"><h4 data-i18n="backup">காப்புப்பிரதி</h4><p data-i18n="backupHint">உங்கள் விருப்பமான மற்றும் மறைக்கப்பட்ட வானொலிகளை JSON கோப்பாக சேமிக்கலாம்.</p><div class="button-row"><button class="secondary" id="exportBtn" data-i18n="export">ஏற்றுமதி</button><button class="secondary" id="importBtn" data-i18n="import">இறக்குமதி</button><input id="backupFile" type="file" accept=".json,application/json" hidden></div></div>
-  <div class="setting-group"><h4><span data-i18n="hiddenStations">மறைக்கப்பட்ட வானொலிகள்</span> <span id="hiddenCount" class="count"></span></h4><div id="hiddenList" class="hidden-list"><p class="count" data-i18n="noneHidden">மறைக்கப்பட்ட வானொலிகள் இல்லை.</p></div></div>
-  <div class="setting-group"><h4 data-i18n="about">Airwave Tamil பற்றி</h4><p data-i18n="aboutText">தமிழ் வானொலிகளை எளிமையாகக் கேட்பதற்கான ஒரு சிறிய இடம்.</p><div class="about-maker"><strong>Made by Prasanna ❤️</strong><div class="about-links"><a href="https://t.me/prasannaone" target="_blank" rel="noopener noreferrer">Telegram <span>@prasannaone</span></a><a href="https://github.com/PrasannaOne" target="_blank" rel="noopener noreferrer">GitHub <span>PrasannaOne</span></a></div></div></div>
-</section></div>
-
-<div class="modal-backdrop" id="playerModal" role="presentation"><section class="modal player-sheet" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
-  <div class="modal-head"><div><h3 data-i18n="nowPlaying">இப்போது ஒலிப்பது</h3><p data-i18n="liveRadio">நேரலை வானொலி</p></div><button class="close-btn" data-close="playerModal" aria-label="Close">×</button></div>
-  <div class="player-art" id="playerArt">♫</div><h3 id="playerTitle">Airwave Tamil</h3><p class="muted" id="playerSubtitle">தமிழ் வானொலி</p>
-  <div class="player-controls"><button id="playerFav" aria-label="Favourite">♡</button><button class="primary-play" id="playerPlay" aria-label="Play">▶</button><button id="playerStop" aria-label="Stop">■</button></div>
-  <div class="setting-group"><h4 data-i18n="sleepTimer">தூக்க நேரி</h4><select id="sleepSelect" class="setting-select"><option value="0" data-i18n="off">அணை</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option></select><p id="sleepStatus" class="count"></p></div>
-  <div class="volume-row"><span>−</span><input id="volume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"><span>＋</span></div>
-  <div class="button-row" style="justify-content:center;margin-top:17px"><button class="secondary" id="stationWebsite" hidden data-i18n="stationWebsite">வானொலி இணையதளம்</button></div>
-</section></div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
+</div></div>
+<div class="modalbg" id="aboutbg"><div class="modal about-modal">
+  <div class="settingshead"><div><h3 id="aboutTitle">Airwave Tamil பற்றி</h3><p id="aboutSubtitle">தமிழ் வானொலிக்கான உங்கள் சிறிய இடம்.</p></div></div>
+  <div class="settings-scroll">
+    <div class="about-brand">Airwave<span>.</span></div>
+    <p class="about-copy" id="aboutCopy">தமிழ் வானொலிகளை ஒரே எளிய இடத்தில் தேடுங்கள், கேளுங்கள்.</p>
+    <section class="about-section"><h4 id="aboutStartHeading">தொடங்குவது எப்படி</h4><p id="aboutStartText">வானொலிப் பட்டியலைப் பாருங்கள் அல்லது தேடலில் நிலையத்தின் பெயரை உள்ளிடுங்கள். கேட்க விரும்பும் நிலையத்தைத் தேர்ந்தெடுக்கவும். நீங்கள் உலாவும்போதும் சிறிய ஒலிப்பான் கீழே இருக்கும்.</p></section>
+    <section class="about-section"><h4 id="aboutBrowseHeading">வானொலிகளைத் தேடுங்கள்</h4><ul><li id="aboutSearchText">தேடல்: வானொலியின் பெயரை வைத்து தேடலாம்.</li><li id="aboutSurpriseText">ஆச்சரியத் தேர்வு: தற்போது காட்டப்படும் பட்டியலிலிருந்து ஒரு வானொலியைத் தேர்ந்தெடுக்கும்.</li><li id="aboutSortText">வரிசை: பெயர் வரிசையையோ கலந்த வரிசையையோ தேர்ந்தெடுக்கலாம்.</li></ul></section>
+    <section class="about-section"><h4 id="aboutPersonalHeading">உங்கள் விருப்பப்படி</h4><ul><li id="aboutFavText">விருப்பமானவை: இதயக் குறியைத் தொட்டு சேமிக்கவும்.</li><li id="aboutHideText">மறை: தேவையில்லாத வானொலியை மறைத்து, அமைப்புகளில் மீட்டெடுக்கலாம்.</li><li id="aboutRecentText">சமீபத்தியவை: முன்பு கேட்ட வானொலிகளை மீண்டும் திறக்கலாம்.</li><li id="aboutPlayerText">ஒலிப்பான்: கீழே உள்ள பட்டையைத் தொட்டு விரிவாக்கவும். மேலே இழுத்து திறக்கவும்; கீழே இழுத்து மூடவும்.</li><li id="aboutSleepText">தூக்க நேரம்: 5 முதல் 60 நிமிடங்களில் ஒலியை நிறுத்த அமைக்கலாம்.</li></ul></section>
+    <section class="about-section"><h4 id="aboutBackupHeading">காப்புப்பிரதி</h4><p id="aboutBackupText">விருப்பமான வானொலிகளை JSON கோப்பாக ஏற்றுமதி செய்து பின்னர் இறக்குமதி செய்யலாம். பட்டியலில் இல்லாத இறக்குமதி செய்யப்பட்ட வானொலிகளும் சேமிக்கப்பட்டு இயக்கக்கூடியதாக இருக்கும்.</p></section>
+    <section class="about-section"><h4 id="aboutSourceHeading">தரவு மூலம் மற்றும் இணைப்புகள்</h4><p id="aboutSourceText">வானொலி பட்டியல் Radio Browser தரவை அடிப்படையாகக் கொண்டது. Airwave Tamil ஒரு தனித்திட்டம்; பட்டியலில் உள்ள வானொலி நிறுவனங்களுடன் நேரடி தொடர்பு இல்லை.</p>
+      <div class="about-links"><a href="https://t.me/prasannaone" target="_blank" rel="noopener"><strong id="aboutTelegramLabel">டெலிகிராம்</strong><span>@prasannaone ↗</span></a><a href="https://github.com/PrasannaOne/Airwave-Tamil" target="_blank" rel="noopener"><strong id="aboutRepoLabel">Airwave Tamil GitHub களஞ்சியம்</strong><span>GitHub ↗</span></a></div>
+    </section>
+  </div>
+  <div class="settings-footer"><button class="action" id="aboutDone">முடிந்தது</button></div>
+</div></div>
+<input id="file" type="file" accept=".json,application/json" hidden><div class="toast" id="toast"></div>
+<!-- Tamil station catalogue is loaded from ./tamil-stations.json -->
 <script>
-(() => {
-'use strict';
-const $ = id => document.getElementById(id);
-const STORAGE_KEY = 'airwave-tamil-preferences-v1';
-const PAGE_SIZE = 30;
-const collator = new Intl.Collator(undefined,{numeric:true,sensitivity:'base'});
-const translations = {
-  ta:{eyebrow:'தமிழ் வானொலி உலகம்',heroTitle:'உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.',heroSub:'உங்கள் தமிழ் வானொலிக்கான சிறிய இடம்.',searchPlaceholder:'வானொலியைத் தேடுங்கள்...' ,explore:'ஆராயுங்கள்',favourites:'விருப்பமானவை',recent:'சமீபத்தியவை',surprise:'ஆச்சரியப்படுத்து',exploreTamil:'தமிழ் வானொலிகள்',sort:'வரிசைப்படுத்து',loading:'தமிழ் வானொலிகள் தயாராகின்றன…',loadMore:'மேலும் காட்டு',catalogueCredit:'வானொலி பட்டியல்',nothingPlaying:'இன்னும் எதுவும் ஒலிக்கவில்லை',chooseStation:'கேட்க ஒரு வானொலியைத் தேர்ந்தெடுங்கள்',settings:'அமைப்புகள்',personalise:'உங்கள் வானொலி அனுபவத்தை மாற்றுங்கள்.',interfaceLanguage:'இடைமுக மொழி',theme:'தோற்றம்',backup:'காப்புப்பிரதி',backupHint:'உங்கள் விருப்பமான மற்றும் மறைக்கப்பட்ட வானொலிகளை JSON கோப்பாக சேமிக்கலாம்.',export:'ஏற்றுமதி',import:'இறக்குமதி',hiddenStations:'மறைக்கப்பட்ட வானொலிகள்',noneHidden:'மறைக்கப்பட்ட வானொலிகள் இல்லை.',about:'Airwave Tamil பற்றி',aboutText:'தமிழ் வானொலிகளை எளிமையாகக் கேட்பதற்கான ஒரு சிறிய இடம்.',themeForest:'பசுமை',themeMidnight:'நள்ளிரவு ஊதா',themeAmoled:'AMOLED கருப்பு',themeOcean:'கடல் நீலம்',themeLight:'ஒளிர்வு',nowPlaying:'இப்போது ஒலிப்பது',liveRadio:'நேரலை வானொலி',sleepTimer:'தூக்க நேரம்',off:'அணை',stationWebsite:'வானொலி இணையதளம்',suggestTitle:'புதிய தமிழ் வானொலியைப் பரிந்துரைக்கவும்',suggestText:'நல்ல தமிழ் வானொலி தெரியுமா? பட்டியலில் சேர்க்க பரிந்துரையுங்கள்.',stationName:'வானொலி பெயர்',streamAddress:'ஒலிபரப்பு முகவரி',websiteOptional:'இணையதளம் (விருப்பம்)',sendSuggestion:'பரிந்துரையை அனுப்புங்கள்',suggestNote:'இது பட்டியலில் உடனடியாகச் சேராது. பரிந்துரை மதிப்பாய்வு செய்யப்படும்.',retry:'மீண்டும் முயற்சி',play:'ஒலிக்கவும்',pause:'இடைநிறுத்து',hide:'மறை',restore:'மீட்டெடு',favourite:'விருப்பம்',removeFavourite:'விருப்பத்திலிருந்து நீக்கு',noStations:'வானொலிகள் இல்லை. வேறு தேடலை முயற்சிக்கவும்.',noFavourites:'இன்னும் விருப்பமான வானொலிகள் இல்லை. இதயக் குறியைத் தொட்டு சேமிக்கவும்.',noRecent:'நீங்கள் கேட்ட வானொலிகள் இங்கே தோன்றும்.',all:'அனைத்து வானொலிகளும்',stationCount:'வானொலிகள்',connecting:'இணைக்கிறது…',playing:'நேரலையில் ஒலிக்கிறது',paused:'இடைநிறுத்தப்பட்டது',offline:'இணைப்பில் சிக்கல். மீண்டும் முயற்சிக்கவும்.',nothingSelected:'வானொலி தேர்ந்தெடுக்கப்படவில்லை',backupExported:'காப்புப்பிரதி பதிவிறக்கப்பட்டது.',backupImported:'காப்புப்பிரதி இணைக்கப்பட்டது.',backupInvalid:'இந்தக் கோப்பு சரியான Airwave Tamil காப்புப்பிரதி அல்ல.',hiddenToast:'வானொலி மறைக்கப்பட்டது. அமைப்புகளில் மீட்டெடுக்கலாம்.',restoredToast:'வானொலி மீட்டெடுக்கப்பட்டது.',addedRecent:'சமீபத்தியவற்றில் சேர்க்கப்பட்டது.',sleepOff:'தூக்க நேரி அணைக்கப்பட்டது.',sleepOn:'தூக்க நேரி அமைக்கப்பட்டது.',sleepDone:'தூக்க நேரி முடிந்தது. ஒலி நிறுத்தப்பட்டது.',shareCopied:'இணைப்பு நகலெடுக்கப்பட்டது.',shareFailed:'பகிர முடியவில்லை.',suggestMissing:'வானொலி பெயரும் ஒலிபரப்பு முகவரியும் தேவை.',suggestOpened:'பரிந்துரை படிவம் திறக்கப்பட்டது.',suggestFailed:'பரிந்துரையைத் திறக்க முடியவில்லை.',stationWebsiteUnavailable:'இணையதளம் இல்லை.',errorLoading:'வானொலி பட்டியலை ஏற்ற முடியவில்லை.',hiddenEmpty:'மறைக்கப்பட்ட வானொலிகள் இல்லை.',countryIndia:'இந்தியா',otherCountry:'வெளிநாடு',noLogo:'♫',retryHint:'இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.',statusReady:'வானொலிகள் தயாராக உள்ளன',volume:'ஒலி அளவு'},
-  en:{eyebrow:'THE WORLD ON TAMIL AIR',heroTitle:'Find your frequency.',heroSub:'Your lil corner of Tamil radio.',searchPlaceholder:'Search Tamil radio...',explore:'Explore',favourites:'Favourites',recent:'Recent',surprise:'Surprise me',exploreTamil:'Tamil stations',sort:'Sort stations',loading:'Getting Tamil stations ready…',loadMore:'Load more',catalogueCredit:'Station catalogue',nothingPlaying:'Nothing playing yet',chooseStation:'Choose a station to start listening',settings:'Settings',personalise:'Make your radio experience yours.',interfaceLanguage:'Interface language',theme:'Appearance',backup:'Backup',backupHint:'Save your favourites and hidden stations as a JSON file.',export:'Export',import:'Import',hiddenStations:'Hidden stations',noneHidden:'No hidden stations.',about:'About Airwave Tamil',aboutText:'A small, simple listening space for Tamil radio.',themeForest:'Forest',themeMidnight:'Midnight Purple',themeAmoled:'AMOLED Black',themeOcean:'Ocean',themeLight:'Light',nowPlaying:'Now playing',liveRadio:'Live radio',sleepTimer:'Sleep timer',off:'Off',stationWebsite:'Station website',suggestTitle:'Suggest a Tamil station',suggestText:'Know a great Tamil station? Send it in for review.',stationName:'Station name',streamAddress:'Stream URL',websiteOptional:'Website (optional)',sendSuggestion:'Send suggestion',suggestNote:'Suggestions are reviewed before being added to the catalogue.',retry:'Try again',play:'Play',pause:'Pause',hide:'Hide',restore:'Restore',favourite:'Favourite',removeFavourite:'Remove favourite',noStations:'No stations found. Try another search.',noFavourites:'No favourites yet. Tap the heart to save a station.',noRecent:'Stations you listen to will appear here.',all:'All stations',stationCount:'stations',connecting:'Connecting…',playing:'Playing live',paused:'Paused',offline:'Connection problem. Please try again.',nothingSelected:'No station selected',backupExported:'Backup downloaded.',backupImported:'Backup merged.',backupInvalid:'This is not a valid Airwave Tamil backup.',hiddenToast:'Station hidden. Restore it in Settings.',restoredToast:'Station restored.',addedRecent:'Added to recent.',sleepOff:'Sleep timer turned off.',sleepOn:'Sleep timer set.',sleepDone:'Sleep timer ended. Playback stopped.',shareCopied:'Link copied.',shareFailed:'Could not share the link.',suggestMissing:'Station name and stream URL are required.',suggestOpened:'Suggestion form opened.',suggestFailed:'Could not open the suggestion form.',stationWebsiteUnavailable:'No station website available.',errorLoading:'Could not load the station catalogue.',hiddenEmpty:'No hidden stations.',countryIndia:'India',otherCountry:'International',noLogo:'♫',retryHint:'Check your internet connection and try again.',statusReady:'stations ready',volume:'Volume'}
+
+/* ==========================================================
+   AIRWAVE JAVASCRIPT
+   Keep the sections below in place when editing features.
+   ========================================================== */
+
+/* 01 · EXTERNAL STATION CATALOGUE
+   Keep tamil-stations.json beside this HTML file in the same repository.
+   The Tamil station catalogue is fetched when Airwave Tamil starts.
+*/
+
+/* 02 · APP STATE + SMALL HELPERS */
+
+/* Migrate preferences from the earlier Airwave Tamil build once, without
+   touching the international Airwave storage keys. */
+(function migrateLegacyTamilPreferences(){
+  try {
+    if (localStorage.getItem("airwave-tamil-browse-preferences") || localStorage.getItem("airwave-tamil-favs")) return;
+    const raw = localStorage.getItem("airwave-tamil-preferences-v1");
+    if (!raw) return;
+    const old = JSON.parse(raw);
+    const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+    if (Array.isArray(old.favs)) write("airwave-tamil-favs", old.favs);
+    if (Array.isArray(old.recent)) write("airwave-tamil-recent", old.recent);
+    if (Array.isArray(old.hidden)) write("airwave-tamil-hidden-ids", old.hidden);
+    if (old.theme) localStorage.setItem("airwave-tamil-theme", old.theme);
+    if (old.ui) localStorage.setItem("airwave-tamil-language", old.ui === "en" ? "en" : "ta");
+    write("airwave-tamil-browse-preferences", {query:old.search||"",sort:old.sort==='desc'?'reverse':'name',view:old.view==='favs'?'favs':old.view==='recent'?'recent':'all',theme:old.theme||'forest',languageUI:old.ui==='en'?'en':'ta'});
+  } catch (error) { console.warn("Legacy Tamil preferences could not be migrated", error); }
+})();
+
+const $ = (id) => document.getElementById(id);
+const audio = $("audio");
+const PAGE_SIZE = 60;
+const stationCollator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+const countryNameCache = new Map();
+const languageNameCache = new Map();
+
+function safeStorageGet(key, fallback = null) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Browsing and streaming remain available when storage is blocked.
+  }
+}
+
+
+const AIRWAVE_TEXT = {
+ ta: {
+  hero:"உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.", search:"தமிழ் வானொலிகளைத் தேடுங்கள்…",
+  settings:"அமைப்புகள்", share:"பகிர்", expand:"ஒலிப்பானை விரிவாக்கு", fav:"விருப்பமானது",
+  explore:"ஆராயுங்கள்", favourites:"விருப்பமானவை", recent:"சமீபத்தியவை", surprise:"ஆச்சரியத் தேர்வு",
+  headingAll:"தமிழ் வானொலிகள்", headingFavs:"விருப்பமான வானொலிகள்", headingRecent:"சமீபத்தில் கேட்டவை", headingHidden:"மறைக்கப்பட்ட வானொலிகள்",
+  sortAZ:"பெயர்: A–Z", sortZA:"பெயர்: Z–A", sortShuffle:"கலக்கு", count:"{n} வானொலிகள்", loadMore:"மேலும் காட்டு",
+  nothingPlaying:"இன்னும் எதுவும் ஒலிக்கவில்லை", chooseStation:"கேட்க ஒரு வானொலியைத் தேர்ந்தெடுக்கவும்", nowPlaying:"இப்போது ஒலிப்பது", liveRadio:"நேரலை வானொலி",
+  previous:"முந்தைய", next:"அடுத்து", play:"ஒலிக்கவும்", pause:"இடைநிறுத்து", block:"மறை", restore:"மீட்டெடு", favourite:"விருப்பத்தில் சேர்", favourited:"விருப்பத்தில் சேர்க்கப்பட்டது", removeFavourite:"விருப்பத்திலிருந்து நீக்கு",
+  sleep:"தூக்க நேரம்", sleepOff:"முடக்கப்பட்டுள்ளது · தொடர்ந்து கேட்கலாம்", start:"தொடங்கு", cancel:"ரத்து செய்", sleepCountdown:"நிறுத்தப்படும்: {time}", sleepStopped:"ஒலி நிறுத்தப்பட்டது · நேரம் முடிந்தது", sleepFinished:"தூக்க நேரம் முடிந்தது. இனிய இரவு! 🌙", sleepCancelled:"தூக்க நேரம் ரத்து செய்யப்பட்டது.",
+  settingsSubtitle:"உங்கள் வானொலி அனுபவத்தை அமைக்கவும்.", personalise:"தனிப்பயனாக்கம்", appearance:"தோற்றம்", appearanceHint:"வண்ணத் தோற்றத்தைத் தேர்ந்தெடுக்கவும்", language:"இடைமுக மொழி", languageHint:"பயன்பாட்டின் மொழியை மாற்றவும்",
+  forest:"பசுமை", midnight:"நள்ளிரவு ஊதா", amoled:"AMOLED கருப்பு", ocean:"கடல் நீலம்", light:"ஒளிர்வு",
+  stations:"வானொலிகள்", catalogue:"வானொலி பட்டியல்", catalogueHint:"இந்த பதிப்பில் உள்ள வானொலிகள்", hidden:"மறைக்கப்பட்ட வானொலிகள்", hiddenHint:"மறைத்த வானொலிகளை மீட்டெடுக்கவும்", hiddenCount:"{n} மறைக்கப்பட்டவை", hiddenEmpty:"மறைக்கப்பட்ட வானொலிகள் இல்லை.",
+  backup:"காப்புப்பிரதி மற்றும் தரவு", importLabel:"காப்புப்பிரதியை இறக்குமதி", importHint:"சேமித்த விருப்பமான வானொலிகளை இணைக்கவும்", importButton:"இறக்குமதி", exportLabel:"காப்புப்பிரதியை ஏற்றுமதி", exportHint:"உங்கள் விருப்பமான வானொலிகளைச் சேமிக்கவும்", exportButton:"ஏற்றுமதி", clearLabel:"சேமித்த தரவை நீக்கு", clearHint:"விருப்பமானவை, மறைக்கப்பட்டவை மற்றும் வரலாற்றை நீக்கும்", clearButton:"நீக்கு", about:"பற்றி", aboutLabel:"Airwave Tamil பற்றி", aboutHint:"பயன்பாட்டின் அம்சங்கள் மற்றும் வழிகாட்டி", aboutButton:"வழிகாட்டி", done:"முடிந்தது",
+  creator:"உருவாக்கியவர்: பிரசன்னா", telegram:"டெலிகிராம்", repo:"Airwave Tamil திட்டக் களஞ்சியம்", aboutSubtitle:"தமிழ் வானொலிக்கான உங்கள் சிறிய இடம்.", aboutCopy:"தமிழ் வானொலிகளை ஒரே எளிய இடத்தில் தேடுங்கள், கேளுங்கள்.",
+  aboutStart:"தொடங்குவது எப்படி", aboutStartText:"வானொலிப் பட்டியலைப் பாருங்கள் அல்லது தேடலில் நிலையத்தின் பெயரை உள்ளிடுங்கள். கேட்க விரும்பும் நிலையத்தைத் தேர்ந்தெடுக்கவும். நீங்கள் உலாவும்போதும் சிறிய ஒலிப்பான் கீழே இருக்கும்.",
+  aboutBrowse:"வானொலிகளைத் தேடுங்கள்", aboutSearch:"தேடல்: வானொலியின் பெயரை வைத்து தேடலாம்.", aboutSurprise:"ஆச்சரியத் தேர்வு: தற்போது காட்டப்படும் பட்டியலிலிருந்து ஒரு வானொலியைத் தேர்ந்தெடுக்கும்.", aboutSort:"வரிசை: பெயர் வரிசையையோ கலந்த வரிசையையோ தேர்ந்தெடுக்கலாம்.",
+  aboutPersonal:"உங்கள் விருப்பப்படி", aboutFav:"விருப்பமானவை: இதயக் குறியைத் தொட்டு சேமிக்கவும்.", aboutHide:"மறை: தேவையில்லாத வானொலியை மறைத்து, அமைப்புகளில் மீட்டெடுக்கலாம்.", aboutRecent:"சமீபத்தியவை: முன்பு கேட்ட வானொலிகளை மீண்டும் திறக்கலாம்.", aboutPlayer:"ஒலிப்பான்: கீழே உள்ள பட்டையைத் தொட்டு விரிவாக்கவும். மேலே இழுத்து திறக்கவும்; கீழே இழுத்து மூடவும்.", aboutSleep:"தூக்க நேரம்: 5 முதல் 60 நிமிடங்களில் ஒலியை நிறுத்த அமைக்கலாம்.",
+  aboutBackup:"காப்புப்பிரதி", aboutBackupText:"விருப்பமான வானொலிகளை JSON கோப்பாக ஏற்றுமதி செய்து பின்னர் இறக்குமதி செய்யலாம். பட்டியலில் இல்லாத இறக்குமதி செய்யப்பட்ட வானொலிகளும் சேமிக்கப்பட்டு இயக்கக்கூடியதாக இருக்கும்.",
+  aboutSource:"தரவு மூலம் மற்றும் இணைப்புகள்", aboutSourceText:"வானொலி பட்டியல் Radio Browser தரவை அடிப்படையாகக் கொண்டது. Airwave Tamil ஒரு தனித்திட்டம்; பட்டியலில் உள்ள வானொலி நிறுவனங்களுடன் நேரடி தொடர்பு இல்லை.",
+  copied:"இணைப்பு நகலெடுக்கப்பட்டது.", copyPrompt:"இந்த இணைப்பைப் பகிர நகலெடுக்கவும்:", shareError:"பகிர்வைத் திறக்க முடியவில்லை. இணைப்பை நகலெடுக்க முயற்சிக்கவும்.",
+  invalidStream:"இந்த வானொலிக்கான ஒலிபரப்பு முகவரி சரியாக இல்லை.", connecting:"இணைக்கிறது…", playing:"நேரலையில் ஒலிக்கிறது", paused:"இடைநிறுத்தப்பட்டது", streamUnavailable:"ஒலிபரப்பை இயக்க முடியவில்லை.",
+  ready:"● வானொலி தயார்", live:"● நேரலை", streamError:"● ஒலிபரப்பு பிழை", unknownStation:"பெயரிடப்படாத வானொலி", radio:"தமிழ் வானொலி",
+  noStations:"வானொலிகள் இல்லை. வேறு தேடலை முயற்சிக்கவும்.", noFavourites:"இன்னும் விருப்பமான வானொலிகள் இல்லை. இதயக் குறியைத் தொட்டு சேமிக்கவும்.", noRecent:"நீங்கள் கேட்ட வானொலிகள் இங்கே தோன்றும்.", noHidden:"மறைக்கப்பட்ட வானொலிகள் இல்லை.",
+  stationRestored:"வானொலி மீட்டெடுக்கப்பட்டது.", stationHidden:"வானொலி மறைக்கப்பட்டது. அமைப்புகளில் மீட்டெடுக்கலாம்.", noOther:"வேறு வானொலி இல்லை.", noPlayable:"இப்போது இயக்கக்கூடிய வானொலி இல்லை.", surprisePick:"தேர்ந்தெடுக்கப்பட்டது: {name}",
+  sleepTimerCancelled:"தூக்க நேரம் ரத்து செய்யப்பட்டது.", confirmClear:"விருப்பமானவை, மறைக்கப்பட்ட வானொலிகள் மற்றும் கேட்பு வரலாற்றை நீக்கவா?", cleared:"சேமித்த தரவும் கேட்பு வரலாறும் நீக்கப்பட்டன.",
+  exported:"{n} விருப்பமான வானொலிகள் ஏற்றுமதி செய்யப்பட்டன.", importInvalid:"இந்தக் கோப்பு சரியான Airwave Tamil காப்புப்பிரதி அல்ல.", importError:"இறக்குமதி செய்ய முடியவில்லை: {error}", readError:"இந்தக் கோப்பைப் படிக்க முடியவில்லை.", importSummary:"{n} வானொலிகள் விருப்பமானவற்றில் சேர்க்கப்பட்டன.",
+  loading:"தமிழ் வானொலிகள் ஏற்றப்படுகின்றன…", unpacking:"வானொலி பட்டியல் திறக்கப்படுகிறது…", reading:"வானொலி விவரங்கள் படிக்கப்படுகின்றன…", preparing:"வானொலிகள் தயாராகின்றன…", loaded:"வானொலிகள் தயார்", loadFailed:"வானொலி பட்டியலை ஏற்ற முடியவில்லை.", retry:"மீண்டும் முயற்சி", retrying:"மீண்டும் முயற்சிக்கிறது…", retryHint:"இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
+  backTop:"மேலே செல்லவும்", closePlayer:"ஒலிப்பானை மூடு", playStation:"வானொலியை இயக்கு", hideStation:"வானொலியை மறை", resetSearch:"தேடலை அழி", min:"நிமி", countUnit:"வானொலிகள்"
+ },
+ en: {
+  hero:"Find your frequency.", search:"Search Tamil radio stations…", settings:"Settings", share:"Share", expand:"Expand player", fav:"Favourite station",
+  explore:"Explore", favourites:"Favourites", recent:"Recent", surprise:"Surprise me", headingAll:"Tamil stations", headingFavs:"Your favourites", headingRecent:"Recently played", headingHidden:"Hidden stations",
+  sortAZ:"Name: A–Z", sortZA:"Name: Z–A", sortShuffle:"Shuffle", count:"{n} stations", loadMore:"Load more",
+  nothingPlaying:"Nothing playing yet", chooseStation:"Choose a station to start listening", nowPlaying:"NOW PLAYING", liveRadio:"Live radio", previous:"Previous", next:"Next", play:"Play", pause:"Pause", block:"Hide", restore:"Restore", favourite:"Favourite", favourited:"Favourited", removeFavourite:"Remove favourite",
+  sleep:"Sleep timer", sleepOff:"Off · Keep listening", start:"Start", cancel:"Cancel", sleepCountdown:"Stops in {time}", sleepStopped:"Playback stopped · Timer complete", sleepFinished:"Sleep timer finished. Good night! 🌙", sleepCancelled:"Sleep timer cancelled.",
+  settingsSubtitle:"Make your radio experience yours.", personalise:"Personalise", appearance:"Appearance", appearanceHint:"Choose your colour theme", language:"Interface language", languageHint:"Change the app display language", forest:"Forest", midnight:"Midnight purple", amoled:"AMOLED black", ocean:"Ocean", light:"Light",
+  stations:"Stations", catalogue:"Station catalogue", catalogueHint:"Stations available in this edition", hidden:"Hidden stations", hiddenHint:"Restore stations you've hidden", hiddenCount:"{n} hidden", hiddenEmpty:"No hidden stations.",
+  backup:"Backup & data", importLabel:"Import backup", importHint:"Merge saved favourites from an Airwave JSON backup", importButton:"Import JSON", exportLabel:"Export backup", exportHint:"Save your favourites as a JSON backup", exportButton:"Export", clearLabel:"Clear saved data", clearHint:"Remove favourites, hidden stations and listening history", clearButton:"Clear", about:"About", aboutLabel:"About Airwave Tamil", aboutHint:"Project details and a quick usage guide", aboutButton:"View guide", done:"Done",
+  creator:"Made by Prasanna", telegram:"Telegram", repo:"Airwave Tamil GitHub repository", aboutSubtitle:"Your lil corner of Tamil radio.", aboutCopy:"Find and listen to Tamil radio stations in one simple listening space.",
+  aboutStart:"Getting started", aboutStartText:"Browse the station list or search by station name. Choose a station to start listening. The mini-player stays available while you explore.",
+  aboutBrowse:"Find stations", aboutSearch:"Search: Find stations by name.", aboutSurprise:"Surprise me: Pick a station from the currently displayed results.", aboutSort:"Sorting: Choose alphabetical or shuffled results.",
+  aboutPersonal:"Make it yours", aboutFav:"Favourites: Tap the heart to save a station.", aboutHide:"Hide: Hide stations you don't want and restore them in Settings.", aboutRecent:"Recent: Return to stations you've listened to.", aboutPlayer:"Player: Tap the mini-player to expand it. Swipe up to open and down to close.", aboutSleep:"Sleep timer: Set playback to stop automatically after 5–60 minutes.",
+  aboutBackup:"Backups", aboutBackupText:"Export your favourites as a JSON file and import them later. Imported favourites outside the catalogue remain saved and playable.", aboutSource:"Data source & links", aboutSourceText:"The station catalogue is based on Radio Browser data. Airwave Tamil is an independent project and is not affiliated with the listed broadcasters.",
+  copied:"Link copied.", copyPrompt:"Copy this link to share:", shareError:"Could not open sharing. Try copying the link.", invalidStream:"This station has no valid stream URL.", connecting:"Connecting…", playing:"Playing live", paused:"Paused", streamUnavailable:"Stream unavailable or unsupported.", ready:"● RADIO READY", live:"● LIVE RADIO", streamError:"● STREAM ERROR", unknownStation:"Unknown station", radio:"Tamil radio",
+  noStations:"No stations found. Try another search.", noFavourites:"No favourites yet. Tap the heart to save a station.", noRecent:"Stations you listen to will appear here.", noHidden:"No hidden stations.", stationRestored:"Station restored.", stationHidden:"Station hidden. Restore it in Settings.", noOther:"No other station available.", noPlayable:"No playable stations are available.", surprisePick:"Surprise pick: {name}",
+  sleepTimerCancelled:"Sleep timer cancelled.", confirmClear:"Clear saved favourites, hidden stations and listening history?", cleared:"Saved data and listening history cleared.", exported:"{n} favourites exported.", importInvalid:"This is not a valid Airwave Tamil backup.", importError:"Import failed: {error}", readError:"Could not read that file.", importSummary:"{n} stations added to favourites.", loading:"Loading Tamil stations…", unpacking:"Preparing the station catalogue…", reading:"Reading station details…", preparing:"Getting stations ready…", loaded:"Stations ready", loadFailed:"Airwave could not finish loading the station catalogue.", retry:"Retry", retrying:"Retrying…", retryHint:"Check your internet connection and try again.", backTop:"Back to top", closePlayer:"Close player", playStation:"Play station", hideStation:"Hide station", resetSearch:"Clear search", min:"min", countUnit:"stations"
+ }
 };
-let ui = 'ta', theme = 'forest', stations = [], view = 'explore', filtered = [], visibleCount = PAGE_SIZE, current = null, playing = false, playbackStatus = 'paused', sleepTimer = null, sleepEnd = 0, toastTimer = null, hlsInstance = null, playRequestId = 0;
-let favs = new Set(), recent = [], hidden = new Set();
-const audio = $('audio');
-function t(key){return translations[ui][key] ?? translations.en[key] ?? key;}
-function loadPrefs(){try{const p=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');ui=p.ui==='en'?'en':'ta';theme=['forest','midnight','amoled','ocean','light'].includes(p.theme)?p.theme:'forest';favs=new Set(Array.isArray(p.favs)?p.favs:[]);recent=Array.isArray(p.recent)?p.recent.slice(0,40):[];hidden=new Set(Array.isArray(p.hidden)?p.hidden:[]);view=['explore','favs','recent'].includes(p.view)?p.view:'explore';if(p.sort==='desc')$('sort').value='desc';if(typeof p.search==='string')$('search').value=p.search;}catch(e){console.warn('Preferences could not be read',e);}}
-function savePrefs(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({ui,theme,view,sort:$('sort').value,search:$('search').value,favs:[...favs],recent:recent.slice(0,40),hidden:[...hidden]}));}catch(e){toast(ui==='ta'?'சேமிக்க முடியவில்லை. உலாவி சேமிப்பிடத்தைச் சரிபார்க்கவும்.':'Could not save preferences. Check browser storage.');}}
-function toast(message){const node=$('toast');node.textContent=message;node.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>node.classList.remove('show'),2600);}
-function applyTranslations(){document.documentElement.lang=ui;document.querySelectorAll('[data-i18n]').forEach(node=>{const key=node.dataset.i18n;if(translations[ui][key])node.textContent=t(key);});document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>node.placeholder=t(node.dataset.i18nPlaceholder));$('languageSelect').value=ui;$('themeSelect').value=theme;const themeLabels={forest:t('themeForest'),midnight:t('themeMidnight'),amoled:t('themeAmoled'),ocean:t('themeOcean'),light:t('themeLight')};[...$('themeSelect').options].forEach(o=>o.text=themeLabels[o.value]);$('sort').options[0].text=ui==='ta'?'பெயர்: A–Z':'Name: A–Z';$('sort').options[1].text=ui==='ta'?'பெயர்: Z–A':'Name: Z–A';$('search').setAttribute('aria-label',t('searchPlaceholder'));$('miniPlay').setAttribute('aria-label',t(playing?'pause':'play'));render();renderHidden();updatePlayer();}
-function applyTheme(){document.body.dataset.theme=theme;$('themeSelect').value=theme;savePrefs();}
-function safeText(value){return String(value??'').replace(/[\u0000-\u001f]/g,' ').trim();}
-function countryLabel(code){if(!code)return '';if(code==='IN')return t('countryIndia');try{return new Intl.DisplayNames([ui==='ta'?'ta':'en'],{type:'region'}).of(code)||code;}catch{return code;}}
-function key(s){return s.id||s.streamUrl||s.name;}
-function findStation(id){return stations.find(s=>key(s)===id);}
-function stationMeta(s){const tags=s.tags? s.tags.split(/[,;]+/).map(x=>x.trim()).filter(Boolean).slice(0,2).join(' · '):'';return [countryLabel(s.countryCode),tags].filter(Boolean).join(' · ');}
-function sortStations(list){const result=[...list];result.sort((a,b)=>collator.compare(a.name,b.name));if($('sort').value==='desc')result.reverse();return result;}
-function sourceForView(){if(view==='favs')return stations.filter(s=>favs.has(key(s)));if(view==='recent')return recent.map(id=>findStation(id)).filter(Boolean);return stations;}
-function computeFiltered(){const q=$('search').value.trim().toLocaleLowerCase();let list=sourceForView().filter(s=>!hidden.has(key(s)));if(q)list=list.filter(s=>[s.name,s.tags,countryLabel(s.countryCode),s.countryCode].join(' ').toLocaleLowerCase().includes(q));return view==='recent'?list:sortStations(list);}
-function iconImage(s,large=false,slotId=''){const host=document.createElement('div');host.className=large?'player-art':'station-logo';if(slotId)host.id=slotId;if(s?.favicon){const img=document.createElement('img');img.src=s.favicon;img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>{img.remove();host.textContent='♫';};host.append(img);}else host.textContent='♫';return host;}
-function makeCard(s){const card=document.createElement('article');card.className='station';card.append(iconImage(s));const info=document.createElement('div');info.className='station-info';const name=document.createElement('div');name.className='station-name';name.textContent=s.name;const meta=document.createElement('div');meta.className='station-meta';meta.textContent=stationMeta(s)||t('all');info.append(name,meta);const actions=document.createElement('div');actions.className='station-actions';const fav=document.createElement('button');fav.className='action-btn'+(favs.has(key(s))?' liked':'');fav.textContent=favs.has(key(s))?'♥':'♡';fav.title=t(favs.has(key(s))?'removeFavourite':'favourite');fav.setAttribute('aria-label',fav.title);fav.onclick=()=>toggleFavourite(s);const hide=document.createElement('button');hide.className='action-btn hide';hide.textContent='⊘';hide.title=t('hide');hide.setAttribute('aria-label',hide.title);hide.onclick=()=>{hidden.add(key(s));savePrefs();render();renderHidden();toast(t('hiddenToast'));};const play=document.createElement('button');play.className='action-btn play';play.textContent=current&&key(current)===key(s)&&playing?'Ⅱ':'▶';play.title=t('play');play.setAttribute('aria-label',play.title);play.onclick=()=>playStation(s);actions.append(fav,hide,play);card.append(info,actions);return card;}
-function render(){if(!stations.length)return;filtered=computeFiltered();const list=$('stationList');list.replaceChildren();const page=filtered.slice(0,visibleCount);page.forEach(s=>list.append(makeCard(s)));const title=view==='favs'?t('favourites'):view==='recent'?t('recent'):t('exploreTamil');$('sectionTitle').textContent=title;$('stationCount').textContent=`${filtered.length.toLocaleString(ui==='ta'?'ta-IN':'en-IN')} ${t('stationCount')}`;$('loadMore').hidden=visibleCount>=filtered.length;if(!page.length){const empty=document.createElement('div');empty.className='empty';empty.textContent=t(view==='favs'?'noFavourites':view==='recent'?'noRecent':'noStations');list.append(empty);}document.querySelectorAll('[data-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.view===view));}
-function renderHidden(){const host=$('hiddenList');if(!host)return;host.replaceChildren();const list=stations.filter(s=>hidden.has(key(s)));$('hiddenCount').textContent=`(${list.length})`;if(!list.length){const p=document.createElement('p');p.className='count';p.textContent=t('hiddenEmpty');host.append(p);return;}list.sort((a,b)=>collator.compare(a.name,b.name)).forEach(s=>{const row=document.createElement('div');row.className='hidden-row';const name=document.createElement('span');name.textContent=s.name;const restore=document.createElement('button');restore.textContent=t('restore');restore.onclick=()=>{hidden.delete(key(s));savePrefs();renderHidden();render();toast(t('restoredToast'));};row.append(name,restore);host.append(row);});}
-function toggleFavourite(s){const id=key(s);if(favs.has(id))favs.delete(id);else favs.add(id);savePrefs();render();updatePlayer();}
-function addRecent(s){recent=[key(s),...recent.filter(id=>id!==key(s))].slice(0,40);savePrefs();}
-function destroyHls(){if(hlsInstance){try{hlsInstance.destroy();}catch(e){console.warn('HLS cleanup failed',e);}hlsInstance=null;}}
-function loadHlsLibrary(){return new Promise((resolve,reject)=>{if(window.Hls)return resolve();const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/hls.js@1.7.4/dist/hls.min.js';script.async=true;script.onload=()=>window.Hls?resolve():reject(new Error('HLS library unavailable'));script.onerror=()=>reject(new Error('Could not load HLS support'));document.head.append(script);});}
-async function startHlsStream(url,requestId){const native=audio.canPlayType('application/vnd.apple.mpegurl');if(native){audio.src=url;audio.load();await audio.play();return;}await loadHlsLibrary();if(requestId!==playRequestId)return;if(!window.Hls||!window.Hls.isSupported())throw new Error('HLS is not supported in this browser');await new Promise((resolve,reject)=>{let settled=false;let timeout;const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timeout);error?reject(error):resolve();};timeout=setTimeout(()=>finish(new Error('HLS playback timed out')),20000);hlsInstance=new window.Hls({enableWorker:true,lowLatencyMode:false});hlsInstance.on(window.Hls.Events.MEDIA_ATTACHED,()=>hlsInstance.loadSource(url));hlsInstance.on(window.Hls.Events.MANIFEST_PARSED,async()=>{if(requestId!==playRequestId)return finish(new Error('Playback cancelled'));try{await audio.play();finish();}catch(e){finish(e);}});hlsInstance.on(window.Hls.Events.ERROR,(_event,data)=>{if(data?.fatal)finish(new Error(data.details||'HLS stream error'));});hlsInstance.attachMedia(audio);});}
-function setStatus(text){$('miniStatus').textContent=text;}
-function updatePlayer(){const has=!!current;$('miniTitle').textContent=has?current.name:t('nothingPlaying');if(!has)setStatus(t('chooseStation'));else if(playbackStatus==='connecting')setStatus(t('connecting'));else if(playbackStatus==='offline')setStatus(t('offline'));else if(playing)setStatus(t('playing'));else setStatus(t('paused'));$('miniFav').disabled=!has;$('miniPlay').disabled=!has;$('miniFav').textContent=has&&favs.has(key(current))?'♥':'♡';$('miniFav').classList.toggle('liked',has&&favs.has(key(current)));$('miniPlay').textContent=playing?'Ⅱ':'▶';$('playerTitle').textContent=has?current.name:t('nothingSelected');$('playerSubtitle').textContent=has?stationMeta(current):t('liveRadio');$('playerArt').replaceWith(iconImage(current,true,'playerArt'));$('playerFav').textContent=has&&favs.has(key(current))?'♥':'♡';$('playerPlay').textContent=playing?'Ⅱ':'▶';$('stationWebsite').hidden=!(has&&current.homepage);if(has&&current.homepage)$('stationWebsite').onclick=()=>window.open(current.homepage,'_blank','noopener,noreferrer');$('miniArt').replaceWith(iconImage(current,false,'miniArt'));}
-async function playStation(s){if(!s?.streamUrl)return;const requestId=++playRequestId;current=s;playing=false;playbackStatus='connecting';updatePlayer();destroyHls();audio.pause();audio.removeAttribute('src');audio.load();try{if(/\.m3u8(?:$|[?#])/i.test(s.streamUrl)){await startHlsStream(s.streamUrl,requestId);}else{audio.src=s.streamUrl;audio.load();await audio.play();}if(requestId!==playRequestId)return;playing=true;playbackStatus='playing';addRecent(s);}catch(err){if(requestId!==playRequestId)return;console.warn('Stream playback could not start:',err);playing=false;playbackStatus='offline';toast(t('offline'));}updatePlayer();render();}
-function stopPlayback(){playRequestId++;destroyHls();audio.pause();audio.removeAttribute('src');audio.load();playing=false;playbackStatus='paused';updatePlayer();}
-function pausePlayback(){if(current){playRequestId++;destroyHls();audio.pause();audio.removeAttribute('src');audio.load();playing=false;playbackStatus='paused';updatePlayer();}}
-function togglePlay(){if(!current)return;if(playing)pausePlayback();else playStation(current);}
-function openModal(id){$(id).classList.add('open');document.body.style.overflow='hidden';}
-function closeModal(id){$(id).classList.remove('open');if(!document.querySelector('.modal-backdrop.open'))document.body.style.overflow='';}
-function openSettings(){renderHidden();openModal('settingsModal');}
-function download(name,content){const blob=new Blob([content],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-function exportBackup(){const backup={app:'Airwave Tamil',version:1,exportedAt:new Date().toISOString(),favourites:[...favs],hidden:[...hidden],recent};download('airwave-tamil-backup.json',JSON.stringify(backup,null,2));toast(t('backupExported'));}
-function importBackup(file){const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(data.app!=='Airwave Tamil'||!Array.isArray(data.favourites)||!Array.isArray(data.hidden))throw new Error('Invalid backup');for(const id of data.favourites)if(stations.some(s=>key(s)===id))favs.add(id);for(const id of data.hidden)if(stations.some(s=>key(s)===id))hidden.add(id);if(Array.isArray(data.recent))recent=[...new Set([...data.recent.filter(id=>stations.some(s=>key(s)===id)),...recent])].slice(0,40);savePrefs();render();renderHidden();toast(t('backupImported'));}catch(e){toast(t('backupInvalid'));}};reader.readAsText(file);}
-function setSleep(minutes){clearTimeout(sleepTimer);sleepTimer=null;sleepEnd=0;if(!minutes){$('sleepStatus').textContent=t('sleepOff');return;}sleepEnd=Date.now()+minutes*60000;$('sleepStatus').textContent=`${minutes} min`;$('sleepSelect').value=String(minutes);sleepTimer=setTimeout(()=>{stopPlayback();$('sleepSelect').value='0';$('sleepStatus').textContent='';toast(t('sleepDone'));},minutes*60000);toast(t('sleepOn'));}
-const APP_SHARE_URL='https://prasannaone.github.io/Airwave-Tamil/';
-async function copyShareLink(){
-  const url=APP_SHARE_URL;
-  try{
-    if(window.isSecureContext&&navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
-      await navigator.clipboard.writeText(url);
-      toast(t('shareCopied'));
-      return true;
+function t(key, vars={}) {
+  let value = AIRWAVE_TEXT[ui]?.[key] ?? AIRWAVE_TEXT.en[key] ?? key;
+  return String(value).replace(/\{(\w+)\}/g, (_, name) => String(vars[name] ?? ""));
+}
+
+let stations = [];
+let sortedCatalogue = [];
+let importedFavouriteStations = loadSavedArray("airwave-tamil-imported-favs");
+let hiddenStationIds = new Set(loadSavedArray("airwave-tamil-hidden-ids"));
+let hiddenStationRecords = loadSavedArray("airwave-tamil-hidden-records");
+let filtered = [];
+let shown = 0;
+let view = "all";
+let current = null;
+let favs = new Set(loadSavedArray("airwave-tamil-favs"));
+let recent = loadSavedArray("airwave-tamil-recent");
+let ui = safeStorageGet("airwave-tamil-language", "ta") === "en" ? "en" : "ta";
+let toastTimer = null;
+
+
+function applyInterfaceLanguageCore(language, shouldRender=true) {
+  ui = language === "en" ? "en" : "ta";
+  document.documentElement.lang = ui;
+  countryNameCache.clear(); languageNameCache.clear();
+  safeStorageSet("airwave-tamil-language", ui);
+  const set = (id,key) => { const node = $(id); if (node) node.textContent = t(key); };
+  const attr = (id,name,key) => { const node=$(id); if(node) node.setAttribute(name,t(key)); };
+  set("heroTitle","hero"); set("settingsTitle","settings"); set("settingsSubtitle","settingsSubtitle");
+  set("personaliseHeading","personalise"); set("themeLabel","appearance"); set("themeHint","appearanceHint"); set("languageLabel","language"); set("languageHint","languageHint");
+  set("stationsHeading","stations"); set("catalogueLabel","catalogue"); set("catalogueHint","catalogueHint"); set("hiddenLabel","hidden"); set("hiddenHint","hiddenHint");
+  set("backupHeading","backup"); set("importLabel","importLabel"); set("importHint","importHint"); set("import2","importButton"); set("exportLabel","exportLabel"); set("exportHint","exportHint"); set("export2","exportButton"); set("clearLabel","clearLabel"); set("clearHint","clearHint"); set("clear","clearButton");
+  set("aboutHeading","about"); set("aboutLabel","aboutLabel"); set("aboutHint","aboutHint"); set("openAbout","aboutButton"); set("close","done");
+  set("creatorText","creator"); $("creatorText").innerHTML = `${t("creator")} <span>❤️</span>`; set("telegramFooterText","telegram");
+  set("aboutTitle","aboutLabel"); set("aboutSubtitle","aboutSubtitle"); set("aboutCopy","aboutCopy"); set("aboutStartHeading","aboutStart"); set("aboutStartText","aboutStartText");
+  set("aboutBrowseHeading","aboutBrowse"); set("aboutSearchText","aboutSearch"); set("aboutSurpriseText","aboutSurprise"); set("aboutSortText","aboutSort"); set("aboutPersonalHeading","aboutPersonal");
+  set("aboutFavText","aboutFav"); set("aboutHideText","aboutHide"); set("aboutRecentText","aboutRecent"); set("aboutPlayerText","aboutPlayer"); set("aboutSleepText","aboutSleep");
+  set("aboutBackupHeading","aboutBackup"); set("aboutBackupText","aboutBackupText"); set("aboutSourceHeading","aboutSource"); set("aboutSourceText","aboutSourceText"); set("aboutTelegramLabel","telegram"); set("aboutRepoLabel","repo"); set("aboutDone","done");
+  set("query","search"); $("query").placeholder=t("search"); attr("query","aria-label","search");
+  attr("settings","title","settings"); attr("settings","aria-label","settings"); attr("share","title","share"); attr("share","aria-label","share");
+  attr("miniPlayerOpen","aria-label","expand"); attr("playerfav","aria-label","fav"); attr("playerSheet","aria-label","nowPlaying"); attr("playerSheetClose","aria-label","closePlayer");
+  attr("sheetPrev","aria-label","previous"); attr("sheetPrev","title","previous"); attr("sheetNext","aria-label","next"); attr("sheetNext","title","next"); attr("sheetToggle","aria-label","play");
+  attr("sheetHide","title","hideStation"); attr("sheetHide","aria-label","hideStation"); attr("sheetFav","title","favourite"); attr("sheetFav","aria-label","favourite");
+  attr("toggle","aria-label","play"); attr("playerSheetClose","title","closePlayer"); attr("backToTop","aria-label","backTop"); attr("backToTop","title","backTop");
+  const navMap = {all:"explore",favs:"favourites",recent:"recent"};
+  document.querySelectorAll("[data-view]").forEach(button => {
+    const key=navMap[button.dataset.view];
+    if (key) button.textContent = (button.dataset.view==="favs"?"♡ ":button.dataset.view==="recent"?"◷ ":"") + t(key);
+    button.setAttribute("aria-label", key ? t(key) : button.textContent);
+  });
+  $("surprise").textContent = "✧ " + t("surprise");
+  const sort=$("sort"); sort.options[0].text=t("sortAZ"); sort.options[1].text=t("sortZA"); sort.options[2].text=t("sortShuffle");
+  set("more","loadMore"); set("trackname","nothingPlaying"); set("trackstate","chooseStation"); set("sheetStation","nothingPlaying"); set("sheetSubtitle","chooseStation");
+  set("livePill","liveRadio"); set("sheetNowPlayingLabel","nowPlaying");
+  set("sheetPrevLabel","previous"); set("sheetNextLabel","next"); set("sheetHideLabel","block"); set("sheetFavLabel","favourite");
+  set("sleepTitle","sleep"); set("sleepStatus","sleepOff"); set("sleepAction","start"); $("sleepMinutes").textContent = `${$("sleepTimer").value} ${t("min")}`;
+  const sheetPlayLabel = $("sheetToggle").querySelector(".action-label"); if (sheetPlayLabel) sheetPlayLabel.textContent = current && !audio.paused ? t("pause") : t("play");
+  const themeLabels={midnight:t("midnight"),amoled:t("amoled"),ocean:t("ocean"),light:t("light"),forest:t("forest")};
+  [...$("theme").options].forEach(option=>option.text=themeLabels[option.value]);
+  $("uilang").value=ui; $("theme").value=safeStorageGet("airwave-tamil-theme","forest");
+  const currentTitle = document.querySelector("title"); if(currentTitle) currentTitle.textContent="Airwave Tamil · " + (ui==="ta"?"தமிழ் வானொலி":"Tamil Radio");
+  if (shouldRender && stations.length) { renderStations(); if(current) updateExpandedPlayer(); renderHiddenSettings(); }
+  if(current){ $("trackstate").textContent=audio.error?t("streamUnavailable"):audio.paused?t("paused"):t("playing"); $("sheetToggle").querySelector(".action-label").textContent=audio.paused?t("play"):t("pause"); updateExpandedPlayer(); }
+  if(!current){ $("trackname").textContent=t("nothingPlaying"); $("trackstate").textContent=t("chooseStation"); $("sheetStation").textContent=t("nothingPlaying"); $("sheetSubtitle").textContent=t("chooseStation"); $("livePill").textContent=t("liveRadio"); }
+  $("sleepStatus").textContent=sleepTimerId?$("sleepStatus").textContent:t("sleepOff");
+  $("sleepAction").textContent=sleepTimerId?t("cancel"):t("start");
+}
+
+function loadSavedArray(key) {
+  try {
+    const value = JSON.parse(safeStorageGet(key, "[]") || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function stationKey(station) {
+  return station.stationuuid || station.id || station.url_stream || station.streamUrl || "";
+}
+
+function stationStreamUrl(station) { return station?.url_stream || station?.streamUrl || ""; }
+function stationFavicon(station) { return station?.url_favicon || station?.favicon || ""; }
+function stationHomepage(station) { return station?.url_homepage || station?.homepage || ""; }
+
+function isHttpUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function splitCatalogueList(value) {
+  const values = Array.isArray(value) ? value : String(value || "").split(/[,;|]/);
+  return [...new Set(values.map((item) => String(item || "").trim()).filter(Boolean))];
+}
+
+function stationTags(value) {
+  return splitCatalogueList(value);
+}
+
+function stationLanguages(station) {
+  return splitCatalogueList(station?.iso_639).map((code) => code.toLowerCase());
+}
+
+function countryName(code) {
+  if (!code) return ui === "ta" ? "தெரியவில்லை" : "Unknown";
+  if (countryNameCache.has(code)) return countryNameCache.get(code);
+  let name = code;
+  try {
+    name = new Intl.DisplayNames([ui === "ta" ? "ta" : "en"], { type: "region" }).of(code) || code;
+  } catch {}
+  countryNameCache.set(code, name);
+  return name;
+}
+
+function languageName(code) {
+  if (!code) return "";
+  if (languageNameCache.has(code)) return languageNameCache.get(code);
+  let name = code;
+  try {
+    name = new Intl.DisplayNames([ui === "ta" ? "ta" : "en"], { type: "language" }).of(code) || code;
+  } catch {}
+  languageNameCache.set(code, name);
+  return name;
+}
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    $("toast").style.display = "none";
+  }, 2400);
+}
+
+function savePreferences() {
+  safeStorageSet("airwave-tamil-favs", JSON.stringify([...favs]));
+  safeStorageSet("airwave-tamil-recent", JSON.stringify(recent));
+  safeStorageSet(
+    "airwave-tamil-imported-favs",
+    JSON.stringify(importedFavouriteStations)
+  );
+  safeStorageSet("airwave-tamil-hidden-ids", JSON.stringify([...hiddenStationIds]));
+  safeStorageSet("airwave-tamil-hidden-records", JSON.stringify(hiddenStationRecords));
+}
+
+
+
+/* Browse preferences: Tamil app-only, persisted after catalogue is ready. */
+const AIRWAVE_BROWSE_PREFS_KEY = "airwave-tamil-browse-preferences";
+let browsePreferencesReady = false;
+function saveBrowsePreferences() {
+  if (!browsePreferencesReady) return;
+  safeStorageSet(AIRWAVE_BROWSE_PREFS_KEY, JSON.stringify({
+    query: $("query").value,
+    sort: $("sort").value,
+    view,
+    theme: safeStorageGet("airwave-tamil-theme", "forest"),
+    languageUI: ui
+  }));
+}
+function restoreBrowsePreferences() {
+  let saved = {};
+  try { saved = JSON.parse(safeStorageGet(AIRWAVE_BROWSE_PREFS_KEY, "{}")) || {}; } catch { saved = {}; }
+  $("query").value = typeof saved.query === "string" ? saved.query : "";
+  $("sort").value = ["name", "reverse", "random"].includes(saved.sort) ? saved.sort : "name";
+  view = ["all", "favs", "recent", "hidden"].includes(saved.view) ? saved.view : "all";
+  if (saved.languageUI === "en" || saved.languageUI === "ta") ui = saved.languageUI;
+  document.querySelectorAll("[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+}
+
+function allKnownStations() {
+  const unique = new Map();
+  [...stations, ...importedFavouriteStations, ...hiddenStationRecords].forEach((station) => {
+    const id = stationKey(station);
+    // The current catalogue is authoritative when an imported record now matches it.
+    if (id && !unique.has(id)) unique.set(id, station);
+  });
+  return [...unique.values()];
+}
+
+/* 03 · THEME + STATION CARD UI */
+function applyTheme(theme) {
+  const allowedThemes = ["midnight", "amoled", "ocean", "light", "forest"];
+  const selectedTheme = allowedThemes.includes(theme) ? theme : "forest";
+
+  document.body.dataset.theme = selectedTheme;
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute("content", getComputedStyle(document.body).getPropertyValue("--bg").trim() || "#101913");
+  safeStorageSet("airwave-tamil-theme", selectedTheme);
+  $("theme").value = selectedTheme;
+}
+
+function makeStationCard(station) {
+  const card=document.createElement("article"); card.className="station";
+  let logo; const favicon=stationFavicon(station);
+  if(favicon){logo=document.createElement("img");logo.className="logo";logo.alt="";logo.loading="lazy";logo.referrerPolicy="no-referrer";logo.src=favicon;logo.onerror=()=>{const fallback=document.createElement("div");fallback.className="logo";fallback.textContent="♫";logo.replaceWith(fallback);};}
+  else {logo=document.createElement("div");logo.className="logo";logo.textContent="♫";}
+  const info=document.createElement("div");info.className="info";
+  const name=document.createElement("div");name.className="name";name.textContent=station.name||t("unknownStation");
+  const meta=document.createElement("div");meta.className="meta";
+  meta.textContent=[countryName(station.iso_3166_1),stationTags(station.tags).slice(0,2).join(" · ")].filter(Boolean).join(" • ");
+  info.append(name,meta);
+  const actions=document.createElement("div");actions.className="actions";
+  const favouriteButton=document.createElement("button");favouriteButton.type="button";favouriteButton.className="smallbtn";
+  const liked=favs.has(stationKey(station));favouriteButton.textContent=liked?"♥":"♡";favouriteButton.title=t(liked?"removeFavourite":"favourite");favouriteButton.setAttribute("aria-label",favouriteButton.title);if(liked)favouriteButton.classList.add("liked");
+  favouriteButton.onclick=()=>{const id=stationKey(station);if(favs.has(id))favs.delete(id);else favs.add(id);savePreferences();applyFilters();};
+  const hideButton=document.createElement("button");hideButton.type="button";hideButton.className="smallbtn hidebtn";
+  const isHidden=hiddenStationIds.has(stationKey(station));hideButton.textContent=isHidden?"↶":"⊘";hideButton.title=isHidden?t("restore"):t("hideStation");hideButton.setAttribute("aria-label",hideButton.title);
+  hideButton.onclick=()=>{const id=stationKey(station);if(hiddenStationIds.has(id)){hiddenStationIds.delete(id);toast(t("stationRestored"));}else{hiddenStationIds.add(id);if(!stations.some(item=>stationKey(item)===id)&&!hiddenStationRecords.some(item=>stationKey(item)===id))hiddenStationRecords.push(station);toast(t("stationHidden"));}savePreferences();renderHiddenSettings();applyFilters();};
+  const playButton=document.createElement("button");playButton.type="button";playButton.className="smallbtn play";playButton.textContent="▶";playButton.title=t("playStation");playButton.setAttribute("aria-label",playButton.title);playButton.onclick=()=>playStation(station);
+  actions.append(hideButton,favouriteButton,playButton);card.append(logo,info,actions);return card;
+}
+
+/* 04 · TAMIL SEARCH, SORTING + RESULTS */
+function applyFilters() {
+  const query = $("query").value.trim().toLocaleLowerCase();
+  const source = view === "favs" || view === "recent" || view === "hidden" ? allKnownStations() : stations;
+  filtered = source.filter(station => {
+    const id = stationKey(station);
+    if (view === "hidden" && !hiddenStationIds.has(id)) return false;
+    if (view !== "hidden" && hiddenStationIds.has(id)) return false;
+    if (view === "favs" && !favs.has(id)) return false;
+    if (view === "recent" && !recent.includes(id)) return false;
+    if (!query) return true;
+    const searchable = [station.name || "", station.tags || "", countryName(station.iso_3166_1), station.iso_3166_1 || ""].join(" ").toLocaleLowerCase();
+    return searchable.includes(query);
+  });
+  if (view === "recent") {
+    filtered.sort((a,b) => recent.indexOf(stationKey(a)) - recent.indexOf(stationKey(b)));
+  } else if ($("sort").value === "reverse") {
+    filtered.sort((a,b) => stationCollator.compare(b.name || "", a.name || ""));
+  } else if ($("sort").value === "random") {
+    for (let i=filtered.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [filtered[i],filtered[j]]=[filtered[j],filtered[i]]; }
+  } else {
+    filtered.sort((a,b) => stationCollator.compare(a.name || "", b.name || ""));
+  }
+  shown = 0;
+  renderStations();
+  saveBrowsePreferences();
+  if (current) { $("playerfav").textContent=favs.has(stationKey(current))?"♥":"♡"; updateExpandedPlayer(); }
+}
+
+function renderStations() {
+  const list = $("list"); list.replaceChildren();
+  const page = filtered.slice(0, shown + PAGE_SIZE); shown = page.length;
+  page.forEach(station => list.append(makeStationCard(station)));
+  const count = filtered.length.toLocaleString(ui === "ta" ? "ta-IN" : "en-IN");
+  $("count").textContent = t("count",{n:count});
+  $("heading").textContent = view === "favs" ? t("headingFavs") : view === "recent" ? t("headingRecent") : view === "hidden" ? t("headingHidden") : t("headingAll");
+  $("more").hidden = shown >= filtered.length;
+  if (!page.length) {
+    const empty=document.createElement("div"); empty.className="empty";
+    empty.textContent=t(view==="favs"?"noFavourites":view==="recent"?"noRecent":view==="hidden"?"noHidden":"noStations");
+    list.append(empty);
+  }
+}
+
+
+const backToTop = document.createElement("button");
+backToTop.id = "backToTop";
+backToTop.className = "back-to-top";
+backToTop.type = "button";
+backToTop.setAttribute("aria-label", t("backTop"));
+backToTop.title = t("backTop");
+backToTop.innerHTML = '<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 6-6 6 6"/><path d="M12 8v12"/></svg>';
+document.body.append(backToTop);
+const airwaveOverlayIds = ["settingsbg", "aboutbg", "playerSheetBg"];
+function isAirwaveOverlayOpen() {
+  return airwaveOverlayIds.some((id) => {
+    const overlay = $(id);
+    if (!overlay) return false;
+    if (id === "playerSheetBg" || id === "pickerBackdrop") return overlay.classList.contains("open");
+    return getComputedStyle(overlay).display !== "none";
+  });
+}
+const updateBackToTop = () => {
+  const shouldShow = window.scrollY > 500 && !isAirwaveOverlayOpen();
+  backToTop.classList.toggle("visible", shouldShow);
+  backToTop.setAttribute("aria-hidden", String(!shouldShow));
+  backToTop.tabIndex = shouldShow ? 0 : -1;
+};
+window.addEventListener("scroll", updateBackToTop, {passive:true});
+window.addEventListener("resize", updateBackToTop, {passive:true});
+// Keep the floating control in sync whenever a modal or picker opens/closes.
+if ("MutationObserver" in window) {
+  const backToTopObserver = new MutationObserver(updateBackToTop);
+  airwaveOverlayIds.forEach((id) => {
+    const overlay = $(id);
+    if (overlay) backToTopObserver.observe(overlay, {attributes:true, attributeFilter:["class", "style"]});
+  });
+}
+backToTop.onclick = () => window.scrollTo({top:0,behavior:"smooth"});
+updateBackToTop();
+
+const AIRWAVE_PUBLIC_URL = "https://prasannaone.github.io/Airwave-Tamil/";
+async function copyAirwaveTamilLink() {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(AIRWAVE_PUBLIC_URL);
+      toast(t("copied")); return true;
     }
-  }catch(error){console.warn('Clipboard API unavailable; trying the fallback.',error);}
-  let copied=false;
-  try{
-    const field=document.createElement('textarea');
-    field.value=url;field.readOnly=true;field.setAttribute('aria-hidden','true');
-    field.style.position='fixed';field.style.left='-9999px';field.style.top='0';field.style.opacity='0';field.style.fontSize='16px';
-    document.body.append(field);field.focus();field.select();field.setSelectionRange(0,field.value.length);
-    copied=!!document.execCommand('copy');field.remove();
-  }catch(error){console.warn('Legacy clipboard fallback failed.',error);}
-  if(copied){toast(t('shareCopied'));return true;}
-  try{
-    window.prompt(ui==='ta'?'இந்த இணைப்பைப் பகிர நகலெடுக்கவும்:':'Copy this link to share:',url);
-  }catch(error){toast(t('shareFailed'));}
+  } catch (_) {}
+  try {
+    const field=document.createElement("textarea"); field.value=AIRWAVE_PUBLIC_URL; field.readOnly=true;
+    field.style.position="fixed"; field.style.opacity="0"; field.style.fontSize="16px";
+    document.body.append(field); field.focus(); field.select(); field.setSelectionRange(0,field.value.length);
+    const copied=document.execCommand("copy"); field.remove();
+    if(copied){toast(t("copied"));return true;}
+  } catch (_) {}
+  window.prompt(t("copyPrompt"),AIRWAVE_PUBLIC_URL);
   return false;
 }
-async function shareApp(){
-  const shareData={title:'Airwave Tamil',text:ui==='ta'?'தமிழ் வானொலியைக் கேளுங்கள்.':'Listen to Tamil radio.',url:APP_SHARE_URL};
-  if(typeof navigator.share==='function'){
-    try{
-      if(typeof navigator.canShare!=='function'||navigator.canShare(shareData)){
-        await navigator.share(shareData);
-        return;
-      }
-    }catch(error){
-      if(error&&error.name==='AbortError')return;
-      console.warn('Native sharing unavailable; using link-copy fallback.',error);
-    }
+$("share").onclick = async () => {
+  const data={title:"Airwave Tamil",text:ui==="ta"?"தமிழ் வானொலியைக் கேட்டு மகிழுங்கள்.":"Listen to Tamil radio.",url:AIRWAVE_PUBLIC_URL};
+  if(typeof navigator.share==="function") {
+    try { await navigator.share(data); return; }
+    catch(error) { if(error?.name==="AbortError") return; }
   }
-  await copyShareLink();
+  const copied=await copyAirwaveTamilLink();
+  if(!copied) toast(t("shareError"));
+};
+
+/* 05 · RADIO PLAYER + LISTENING HISTORY */
+let hlsInstance = null;
+let playRequestId = 0;
+function destroyHls(){if(hlsInstance){try{hlsInstance.destroy();}catch(error){console.warn("HLS cleanup failed",error);}hlsInstance=null;}}
+function loadHlsLibrary(){return new Promise((resolve,reject)=>{if(window.Hls)return resolve();const script=document.createElement("script");script.src="https://cdn.jsdelivr.net/npm/hls.js@1.7.4/dist/hls.min.js";script.async=true;script.onload=()=>window.Hls?resolve():reject(new Error("HLS library unavailable"));script.onerror=()=>reject(new Error("Could not load HLS support"));document.head.append(script);});}
+async function startHlsStream(url,requestId){
+  if(audio.canPlayType("application/vnd.apple.mpegurl")){audio.src=url;audio.load();await audio.play();return;}
+  await loadHlsLibrary(); if(requestId!==playRequestId)return;
+  if(!window.Hls||!window.Hls.isSupported())throw new Error("HLS is not supported in this browser");
+  await new Promise((resolve,reject)=>{let settled=false;let timeout;const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timeout);error?reject(error):resolve();};timeout=setTimeout(()=>finish(new Error("HLS playback timed out")),20000);hlsInstance=new window.Hls({enableWorker:true,lowLatencyMode:false});hlsInstance.on(window.Hls.Events.MEDIA_ATTACHED,()=>hlsInstance.loadSource(url));hlsInstance.on(window.Hls.Events.MANIFEST_PARSED,async()=>{if(requestId!==playRequestId)return finish(new Error("Playback cancelled"));try{await audio.play();finish();}catch(error){finish(error);}});hlsInstance.on(window.Hls.Events.ERROR,(_event,data)=>{if(data?.fatal)finish(new Error(data.details||"HLS stream error"));});hlsInstance.attachMedia(audio);});
 }
-async function loadCatalogue(){try{const response=await fetch('./tamil-stations.json',{cache:'no-cache'});if(!response.ok)throw new Error(`HTTP ${response.status}`);const data=await response.json();if(!data||!Array.isArray(data.stations)||!data.stations.length)throw new Error('Empty catalogue');stations=data.stations.filter(s=>s&&s.id&&s.name&&s.streamUrl);if(!stations.length)throw new Error('No usable stations');$('stationCount').textContent=`${stations.length.toLocaleString(ui==='ta'?'ta-IN':'en-IN')} ${t('stationCount')}`;render();}catch(err){console.error('Airwave Tamil catalogue load failed:',err);const host=$('stationList');host.replaceChildren();const box=document.createElement('div');box.className='error-box';const title=document.createElement('strong');title.textContent=t('errorLoading');const p=document.createElement('p');p.textContent=t('retryHint')+' ('+String(err.message||err)+')';const retry=document.createElement('button');retry.className='primary';retry.textContent=t('retry');retry.onclick=loadCatalogue;box.append(title,p,retry);host.append(box);$('stationCount').textContent='';}}
+function playStation(station) {
+  const streamUrl=stationStreamUrl(station);
+  if(!isHttpUrl(streamUrl)){toast(t("invalidStream"));return;}
+  const requestId=++playRequestId;current=station;
+  $("trackname").textContent=station.name||t("unknownStation");$("trackstate").textContent=t("connecting");
+  $("toggle").disabled=false;$("playerfav").disabled=false;$("playerfav").textContent=favs.has(stationKey(station))?"♥":"♡";
+  updatePlayerArtwork(station);updateExpandedPlayer();
+  $("sheetToggle").querySelector(".action-icon").textContent="Ⅱ";$("sheetToggle").querySelector(".action-label").textContent=t("pause");$("sheetToggle").disabled=false;$("sheetFav").disabled=false;
+  audio.pause();destroyHls();audio.removeAttribute("src");audio.load();
+  const start=async()=>{try{if(/\.m3u8(?:$|[?#])/i.test(streamUrl))await startHlsStream(streamUrl,requestId);else{audio.src=streamUrl;audio.load();await audio.play();}if(requestId!==playRequestId)return;$("trackstate").textContent=t("playing");}catch(error){if(requestId!==playRequestId)return;console.warn("Station playback failed",error);$("toggle").textContent="▶";$("sheetToggle").querySelector(".action-icon").textContent="▶";$("sheetToggle").querySelector(".action-label").textContent=t("play");$("trackstate").textContent=t("streamUnavailable");$("miniPlayer").classList.remove("is-playing");updateExpandedPlayer();}};
+  start();
+  const id=stationKey(station);recent=[id,...recent.filter(item=>item!==id)].slice(0,100);savePreferences();
+  if(view==="recent")applyFilters();else updateExpandedPlayer();
+}
 
-// App events
-document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{view=btn.dataset.view;visibleCount=PAGE_SIZE;savePrefs();render();}));
-$('search').addEventListener('input',()=>{visibleCount=PAGE_SIZE;savePrefs();render();});$('sort').addEventListener('change',()=>{visibleCount=PAGE_SIZE;savePrefs();render();});$('loadMore').addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});
-$('surpriseBtn').addEventListener('click',()=>{const candidates=computeFiltered();if(!candidates.length){toast(t('noStations'));return;}playStation(candidates[Math.floor(Math.random()*candidates.length)]);});
-$('settingsBtn').addEventListener('click',openSettings);$('shareBtn').addEventListener('click',shareApp);
-document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeModal(btn.dataset.close)));
-document.querySelectorAll('.modal-backdrop').forEach(backdrop=>backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal(backdrop.id);}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));if(e.key==='Enter'&&document.activeElement===$('openPlayer'))openModal('playerModal');});
-$('languageSelect').addEventListener('change',e=>{ui=e.target.value==='en'?'en':'ta';savePrefs();applyTranslations();});$('themeSelect').addEventListener('change',e=>{theme=e.target.value;applyTheme();});
-$('exportBtn').addEventListener('click',exportBackup);$('importBtn').addEventListener('click',()=>$('backupFile').click());$('backupFile').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
-$('miniPlay').addEventListener('click',togglePlay);$('miniFav').addEventListener('click',()=>current&&toggleFavourite(current));$('openPlayer').addEventListener('click',()=>openModal('playerModal'));$('playerPlay').addEventListener('click',togglePlay);$('playerStop').addEventListener('click',stopPlayback);$('playerFav').addEventListener('click',()=>current&&toggleFavourite(current));$('volume').addEventListener('input',e=>audio.volume=Number(e.target.value));$('sleepSelect').addEventListener('change',e=>setSleep(Number(e.target.value)));
-audio.addEventListener('playing',()=>{playing=true;playbackStatus='playing';updatePlayer();render();});audio.addEventListener('pause',()=>{if(!audio.getAttribute('src')){playing=false;updatePlayer();}});audio.addEventListener('error',()=>{if(current&&audio.getAttribute('src')){playing=false;playbackStatus='offline';updatePlayer();}});
+$("toggle").onclick=()=>{if(!current)return;if(audio.paused)playStation(current);else audio.pause();};
+audio.onplay=()=>{$("toggle").textContent="Ⅱ";$("sheetToggle").querySelector(".action-icon").textContent="Ⅱ";$("sheetToggle").querySelector(".action-label").textContent=t("pause");$("trackstate").textContent=t("playing");$("miniPlayer").classList.add("is-playing");updateExpandedPlayer();};
+audio.onpause=()=>{$("toggle").textContent="▶";$("sheetToggle").querySelector(".action-icon").textContent="▶";$("sheetToggle").querySelector(".action-label").textContent=t("play");$("trackstate").textContent=current?t("paused"):t("chooseStation");$("miniPlayer").classList.remove("is-playing");updateExpandedPlayer();};
+audio.onerror=()=>{if(!current)return;$("toggle").textContent="▶";$("sheetToggle").querySelector(".action-icon").textContent="▶";$("sheetToggle").querySelector(".action-label").textContent=t("play");$("trackstate").textContent=t("streamUnavailable");$("miniPlayer").classList.remove("is-playing");updateExpandedPlayer();};
+$("playerfav").onclick=()=>{if(!current)return;const id=stationKey(current);if(favs.has(id))favs.delete(id);else favs.add(id);savePreferences();$("playerfav").textContent=favs.has(id)?"♥":"♡";updateExpandedPlayer();applyFilters();};
 
-loadPrefs();document.body.dataset.theme=theme;applyTranslations();loadCatalogue();
-})();
-</script>
-</body>
-</html>
+/* 05B · EXPANDED PLAYER + SLEEP TIMER */
+let sleepTimerId = null;
+let sleepTimerEndsAt = 0;
+let sleepTickId = null;
+
+function updatePlayerArtwork(station) {
+  const mini = $("miniCover");
+  const art = $("sheetArt");
+  mini.replaceChildren(); art.replaceChildren();
+  if (stationFavicon(station)) {
+    const miniImg = document.createElement("img"); miniImg.src = stationFavicon(station); miniImg.alt = ""; miniImg.onerror = () => { mini.textContent = "♫"; };
+    const artImg = document.createElement("img"); artImg.src = stationFavicon(station); artImg.alt = "Station artwork"; artImg.onerror = () => { art.textContent = "♫"; };
+    mini.append(miniImg); art.append(artImg);
+  } else { mini.textContent = "♫"; art.textContent = "♫"; }
+}
+
+function updateExpandedPlayer() {
+  if(!current)return;
+  $("sheetStation").textContent=current.name||t("unknownStation");
+  const country=countryName(current.iso_3166_1||current.countryCode);
+  $("sheetSubtitle").textContent=[country,t("radio")].filter(Boolean).join(" · ");
+  $("sheetDetails").replaceChildren();
+  [current.codec,current.bitrate?`${current.bitrate} kbps`:"",...stationTags(current.tags).slice(0,3)].filter(Boolean).forEach(value=>{const chip=document.createElement("span");chip.textContent=value;$("sheetDetails").append(chip);});
+  const isFav=favs.has(stationKey(current)),isHidden=hiddenStationIds.has(stationKey(current));
+  $("sheetFav").querySelector(".action-icon").textContent=isFav?"♥":"♡";$("sheetFav").querySelector(".action-label").textContent=isFav?t("favourited"):t("favourite");
+  $("sheetFav").setAttribute("aria-label",isFav?t("removeFavourite"):t("favourite"));$("sheetFav").title=isFav?t("removeFavourite"):t("favourite");
+  $("sheetHide").querySelector(".action-icon").textContent=isHidden?"↶":"⊘";$("sheetHide").querySelector(".action-label").textContent=isHidden?t("restore"):t("block");
+  $("sheetHide").setAttribute("aria-label",isHidden?t("restore"):t("hideStation"));$("sheetHide").title=isHidden?t("restore"):t("hideStation");
+  $("sheetHide").disabled=false;$("sheetToggle").setAttribute("aria-label",audio.paused?t("play"):t("pause"));$("toggle").setAttribute("aria-label",audio.paused?t("play"):t("pause"));$("sheetToggle").querySelector(".action-icon").textContent=audio.paused?"▶":"Ⅱ";$("sheetToggle").querySelector(".action-label").textContent=audio.paused?t("play"):t("pause");
+  $("sheetToggle").disabled=false;$("sheetFav").disabled=false;
+  $("livePill").textContent=audio.error?t("streamError"):audio.paused?t("ready"):t("live");
+  $("miniPlayer").classList.toggle("is-playing",!audio.paused&&!audio.error);
+  $("sheetPrev").disabled=!getAdjacentRecentStation(-1);$("sheetNext").disabled=!getAdjacentRecentStation(1);
+}
+
+
+function openPlayerSheet() {
+  updateExpandedPlayer();
+  $("playerSheetBg").classList.add("open");
+}
+function closePlayerSheet() { $("playerSheetBg").classList.remove("open"); }
+$("miniPlayerOpen").addEventListener("click", (event) => {
+  if (event.target.closest("button")) return;
+  openPlayerSheet();
+});
+$("miniPlayerOpen").addEventListener("keydown", (event) => {
+  if (event.target.closest("button")) return;
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openPlayerSheet();
+  }
+});
+$("playerSheetClose").onclick = closePlayerSheet;
+$("openAbout").onclick = () => { $("settingsbg").style.display = "none"; $("aboutbg").style.display = "flex"; };
+$("aboutDone").onclick = () => { $("aboutbg").style.display = "none"; $("settingsbg").style.display = "flex"; };
+$("aboutbg").onclick = (event) => { if (event.target === $("aboutbg")) { $("aboutbg").style.display = "none"; $("settingsbg").style.display = "flex"; } };
+
+$("playerSheetBg").onclick = (event) => { if (event.target === $("playerSheetBg")) closePlayerSheet(); };
+
+// Touch-friendly player gestures: swipe up to expand, swipe down to collapse.
+let miniTouchStartY = null;
+$("miniPlayer").addEventListener("touchstart", (event) => {
+  miniTouchStartY = event.changedTouches[0].clientY;
+}, {passive:true});
+$("miniPlayer").addEventListener("touchend", (event) => {
+  if (miniTouchStartY === null) return;
+  const delta = event.changedTouches[0].clientY - miniTouchStartY;
+  if (delta < -22) openPlayerSheet();
+  miniTouchStartY = null;
+}, {passive:true});
+let sheetTouchStartY = null;
+$("playerSheet").addEventListener("touchstart", (event) => {
+  sheetTouchStartY = event.changedTouches[0].clientY;
+}, {passive:true});
+$("playerSheet").addEventListener("touchend", (event) => {
+  if (sheetTouchStartY === null) return;
+  const delta = event.changedTouches[0].clientY - sheetTouchStartY;
+  if (delta > 32) closePlayerSheet();
+  sheetTouchStartY = null;
+}, {passive:true});
+
+$("sheetPrev").onclick = () => playAdjacentRecent(-1);
+$("sheetNext").onclick = () => playAdjacentRecent(1);
+$("sheetToggle").onclick = () => $("toggle").click();
+$("sheetFav").onclick = () => $("playerfav").click();
+
+function stopSleepTimer(message = t("sleepCancelled")) {
+  if (sleepTimerId) clearTimeout(sleepTimerId);
+  if (sleepTickId) clearInterval(sleepTickId);
+  sleepTimerId = null; sleepTickId = null; sleepTimerEndsAt = 0;
+  $("sleepStatus").textContent = t("sleepOff");
+  $("sleepAction").textContent = t("start");
+  if (message) toast(message);
+}
+function startSleepTimer(minutes) {
+  if (sleepTimerId) clearTimeout(sleepTimerId);
+  if (sleepTickId) clearInterval(sleepTickId);
+  if (!minutes) { stopSleepTimer(""); return; }
+  sleepTimerEndsAt = Date.now() + minutes * 60000;
+  $("sleepAction").textContent = t("cancel");
+  const update = () => {
+    const left = Math.max(0, sleepTimerEndsAt - Date.now());
+    const mins = Math.floor(left / 60000), secs = Math.floor((left % 60000) / 1000);
+    $("sleepStatus").textContent = t("sleepCountdown",{time:`${mins}:${String(secs).padStart(2,"0")}`});
+  };
+  update(); sleepTickId = setInterval(update, 1000);
+  sleepTimerId = setTimeout(() => {
+    audio.pause(); stopSleepTimer("");
+    $("sleepStatus").textContent = t("sleepStopped");
+    toast(t("sleepFinished"));
+  }, minutes * 60000);
+}
+$("sleepTimer").oninput = (event) => {
+  $("sleepMinutes").textContent = `${event.target.value} ${t("min")}`;
+};
+$("sleepAction").onclick = () => {
+  if (sleepTimerId) stopSleepTimer(t("sleepCancelled"));
+  else startSleepTimer(Number($("sleepTimer").value));
+};
+
+function getAdjacentRecentStation(direction) {
+  if (!current || filtered.length < 2) return null;
+  const currentIndex = filtered.findIndex(station => stationKey(station) === stationKey(current));
+  if (currentIndex < 0) return null;
+  for (let step = 1; step < filtered.length; step++) {
+    const index = (currentIndex + direction * step + filtered.length) % filtered.length;
+    const candidate = filtered[index];
+    if (candidate && candidate.url_stream) return candidate;
+  }
+  return null;
+}
+function playAdjacentRecent(direction) {
+  const station = getAdjacentRecentStation(direction);
+  if (!station) {
+    toast(t("noOther"));
+    return;
+  }
+  playStation(station);
+}
+$("sheetHide").onclick = () => {
+  if (!current) return;
+  const id = stationKey(current);
+  if (hiddenStationIds.has(id)) {
+    hiddenStationIds.delete(id);
+    hiddenStationRecords = hiddenStationRecords.filter((station) => stationKey(station) !== id);
+    toast(t("stationRestored"));
+  } else {
+    hiddenStationIds.add(id);
+    if (!stations.some((station) => stationKey(station) === id) &&
+        !hiddenStationRecords.some((station) => stationKey(station) === id)) hiddenStationRecords.push(current);
+    toast(t("stationHidden"));
+  }
+  savePreferences();
+  updateExpandedPlayer();
+  applyFilters();
+};
+
+
+
+
+
+/* 06 · SURPRISE ME
+   The pick is always taken from the currently filtered results.
+*/
+function surpriseMe() {
+  const playableStations = filtered.filter((station) => station.url_stream);
+
+  if (playableStations.length === 0) {
+    toast(t("noPlayable"));
+    return;
+  }
+
+  const pick = playableStations[Math.floor(Math.random() * playableStations.length)];
+  playStation(pick);
+  toast(t("surprisePick",{name:pick.name||t("unknownStation")}));
+}
+
+function setView(nextView) {
+  view = nextView;
+
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === view);
+  });
+
+  applyFilters();
+}
+
+document.querySelectorAll("[data-view]").forEach((button) => {
+  button.onclick = () => setView(button.dataset.view);
+});
+
+$("surprise").onclick = surpriseMe;
+
+$("query").oninput=()=>{clearTimeout(window.airwaveSearchDelay);saveBrowsePreferences();window.airwaveSearchDelay=setTimeout(applyFilters,140);};
+$("sort").onchange=applyFilters;
+$("more").onclick=renderStations;
+
+
+
+/* 07 · SETTINGS + INTERFACE LANGUAGE */
+function openSettings() {
+  renderHiddenSettings();
+  $("settingsbg").style.display = "flex";
+}
+
+function closeSettings() {
+  $("settingsbg").style.display = "none";
+}
+
+$("settings").onclick = openSettings;
+$("close").onclick = closeSettings;
+
+$("settingsbg").onclick = (event) => {
+  if (event.target === $("settingsbg")) closeSettings();
+};
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if ($("playerSheetBg").classList.contains("open")) {
+    closePlayerSheet();
+    return;
+  }
+  if ($("aboutbg").style.display === "flex") {
+    $("aboutbg").style.display = "none";
+    $("settingsbg").style.display = "flex";
+    return;
+  }
+  closeSettings();
+});
+
+$("theme").onchange = (event) => applyTheme(event.target.value);
+
+function applyInterfaceLanguage(language, shouldRender = true) {
+  applyInterfaceLanguageCore(language, shouldRender);
+}
+$("uilang").onchange = (event) => { applyInterfaceLanguage(event.target.value); saveBrowsePreferences(); };
+
+
+function persistAirwaveState() {
+  try { saveBrowsePreferences(); } catch (_) {}
+  try { savePreferences(); } catch (_) {}
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") persistAirwaveState();
+});
+window.addEventListener("pagehide", persistAirwaveState);
+
+/* 08 · IMPORT / EXPORT BACKUP
+   Backups contain favourites only and merge without duplicates.
+   Existing catalogue stations are matched by station UUID or stream URL.
+   Favourite stations outside the catalogue are retained locally and remain playable.
+*/
+function downloadFile(filename, contents, mimeType) {
+  const file = new Blob([contents], { type: mimeType });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  // Give mobile browsers enough time to begin the download before revoking it.
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+function exportFavourites() {
+  const known = allKnownStations();
+  const favouriteStations = known.filter((station) => favs.has(stationKey(station)));
+  const backup = {
+    app: "Airwave",
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    favourites: favouriteStations
+  };
+
+  downloadFile(
+    "airwave-favourites.json",
+    JSON.stringify(backup, null, 2),
+    "application/json"
+  );
+  toast(`${favouriteStations.length} favourites exported.`);
+}
+
+function importFavouritesFile(file) {
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try {
+      const parsed=JSON.parse(reader.result);
+      const favouriteList=Array.isArray(parsed)?parsed:Array.isArray(parsed?.favourites)?parsed.favourites:Array.isArray(parsed?.stations)?parsed.stations:null;
+      if(!favouriteList)throw new Error(t("importInvalid"));
+      const catalogueKeys=new Set(stations.map(stationKey)),importedKeys=new Set(importedFavouriteStations.map(stationKey));
+      let added=0,invalid=0;
+      favouriteList.forEach(raw=>{
+        if(!raw||typeof raw!=="object"){invalid++;return;}
+        const stream=raw.url_stream||raw.streamUrl||raw.url||"";
+        const normalized={...raw,stationuuid:raw.stationuuid||raw.id||stream,url_stream:stream,url_favicon:raw.url_favicon||raw.favicon||"",url_homepage:raw.url_homepage||raw.homepage||"",iso_3166_1:raw.iso_3166_1||raw.countryCode||"",tags:raw.tags||"",iso_639:raw.iso_639||"ta"};
+        const id=stationKey(normalized);
+        if(!id||!isHttpUrl(stream)){invalid++;return;}
+        if(!favs.has(id)){favs.add(id);added++;}
+        if(!catalogueKeys.has(id)&&!importedKeys.has(id)){importedFavouriteStations.push(normalized);importedKeys.add(id);}
+      });
+      savePreferences();applyFilters();
+      toast(t("importSummary",{n:added})+(invalid?` · ${invalid} ${ui==="ta"?"தவறான பதிவுகள் தவிர்க்கப்பட்டன":"invalid entries skipped"}`:""));
+    } catch(error) { toast(t("importError",{error:error.message||t("importInvalid")})); }
+  };
+  reader.onerror=()=>toast(t("readError"));reader.readAsText(file);
+}
+
+$("export2").onclick = exportFavourites;
+
+function chooseFavouriteFile() {
+  $("file").click();
+}
+
+$("import2").onclick = chooseFavouriteFile;
+function renderHiddenSettings() {
+  const host = $("hiddenStationManager");
+  if (!host) return;
+  host.replaceChildren();
+  const hidden = allKnownStations().filter((station) => hiddenStationIds.has(stationKey(station)));
+  $("hiddenCount").textContent = t("hiddenCount",{n:hidden.length.toLocaleString(ui==="ta"?"ta-IN":"en-IN")});
+  if (!hidden.length) {
+    const empty = document.createElement("div");
+    empty.className = "hidden-empty";
+    empty.textContent = t("hiddenEmpty");
+    host.append(empty);
+    return;
+  }
+  hidden.sort((a,b) => stationCollator.compare(a.name || "", b.name || ""));
+  hidden.forEach((station) => {
+    const row = document.createElement("div"); row.className = "hidden-row";
+    const name = document.createElement("span"); name.textContent = station.name || "Unnamed station";
+    const restore = document.createElement("button"); restore.type = "button"; restore.textContent = t("restore");
+    restore.onclick = () => {
+      const id = stationKey(station); hiddenStationIds.delete(id);
+      hiddenStationRecords = hiddenStationRecords.filter((item) => stationKey(item) !== id);
+      savePreferences(); renderHiddenSettings(); applyFilters(); toast(t("stationRestored"));
+    };
+    row.append(name, restore); host.append(row);
+  });
+}
+
+$("file").onchange = (event) => {
+  const file = event.target.files[0];
+  if (file) importFavouritesFile(file);
+  event.target.value = "";
+};
+
+$("clear").onclick = () => {
+  if (!confirm(t("confirmClear"))) return;
+
+  favs.clear();
+  recent = [];
+  importedFavouriteStations = [];
+  hiddenStationIds.clear();
+  hiddenStationRecords = [];
+  savePreferences();
+  renderHiddenSettings();
+  applyFilters();
+  if (current) {
+    $("playerfav").textContent = "♡";
+    updateExpandedPlayer();
+  }
+  toast(t("cleared"));
+};
+
+/* 09 · LOAD THE SEPARATE TAMIL CATALOGUE */
+async function loadCatalogue() {
+  const list=$("list"),count=$("count");
+  try {
+    count.textContent=t("loading");
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const response=await fetch("./tamil-stations.json",{cache:"no-cache"});
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    const parsed=await response.json();
+    const records=Array.isArray(parsed)?parsed:(Array.isArray(parsed?.stations)?parsed.stations:[]);
+    if(!records.length)throw new Error("Empty Tamil station catalogue");
+    stations=records.map(raw=>({
+      ...raw,
+      stationuuid:raw.stationuuid||raw.id||raw.url_stream||raw.streamUrl,
+      url_stream:raw.url_stream||raw.streamUrl||raw.url,
+      url_favicon:raw.url_favicon||raw.favicon||"",
+      url_homepage:raw.url_homepage||raw.homepage||"",
+      iso_3166_1:raw.iso_3166_1||raw.countryCode||"",
+      iso_3166_2:raw.iso_3166_2||raw.subdivision||"",
+      iso_639:raw.iso_639||"ta"
+    })).filter(station=>station&&station.stationuuid&&station.name&&isHttpUrl(station.url_stream));
+    if(!stations.length)throw new Error("No usable Tamil radio stations in the catalogue");
+    sortedCatalogue=stations.slice().sort((a,b)=>stationCollator.compare(a.name||"",b.name||""));
+    browsePreferencesReady=true;
+    restoreBrowsePreferences();
+    const savedTheme=safeStorageGet("airwave-tamil-theme","forest")||"forest";
+    applyTheme(savedTheme);
+    applyInterfaceLanguage(ui,false);
+    $("dbinfo").textContent=ui==="ta"?`${stations.length.toLocaleString("ta-IN")} வானொலிகள்`:`${stations.length.toLocaleString("en-IN")} stations`;
+    applyFilters();
+  } catch(error) {
+    console.error("Airwave Tamil catalogue loading failed:",error);
+    count.textContent=t("loadFailed");list.replaceChildren();
+    const message=document.createElement("div");message.className="empty";
+    const explanation=document.createElement("p");explanation.textContent=t("retryHint")+` (${error&&error.message?error.message:"Unknown error"})`;
+    const retry=document.createElement("button");retry.type="button";retry.className="action secondary";retry.textContent=t("retry");
+    retry.addEventListener("click",()=>{retry.disabled=true;retry.textContent=t("retrying");loadCatalogue();});
+    message.append(explanation,retry);list.append(message);
+  }
+}
+
+window.addEventListener("error", (event) => {
+  console.error("Airwave runtime error:", event.error || event.message);
+});
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Airwave background task failed:", event.reason);
+});
+
+
+// The Tamil edition has its own preference namespace and starts in Tamil.
+applyInterfaceLanguageCore(ui, false);
+
+loadCatalogue();
+
+</script></body></html>
