@@ -34,6 +34,8 @@ this same repository folder. Replace the JSON file to update the stations.
 <style>
 :root{color-scheme:dark;--bg:#0b0d14;--surface:#141a27;--surface2:#1c2434;--line:#29344a;--text:#f5f6fc;--muted:#9ba7bd;--accent:#a99bff;--mint:#70e4d0;--pink:#ff8eae;--shadow:0 15px 45px #0004}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -12%,#403675 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding-bottom:100px}
+body:not(.player-ready){padding-bottom:20px}
+body:not(.player-ready) #miniPlayer{display:none}
 body.light{color-scheme:light;--bg:#f3f5fb;--surface:#fff;--surface2:#eef1f8;--line:#dce1ed;--text:#171b2b;--muted:#68738a;--accent:#6756d9;--mint:#008f83;--pink:#d84978;--shadow:0 15px 45px #27314b18;background:radial-gradient(ellipse at 80% -12%,#ddd7ff 0,transparent 35%),var(--bg)}
 body.amoled{--bg:#000;--surface:#090909;--surface2:#141414;--line:#292929;background:#000}
 button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -703,7 +705,7 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:f
 }
 
 /* TAMIL EDITION · SCRIPT-FRIENDLY TYPE + READABLE RESPONSIVE TEXT */
-.hero h2{font-size:clamp(28px,5.4vw,42px);line-height:1.2;letter-spacing:0;max-width:780px;overflow-wrap:anywhere}
+.hero h2{font-size:clamp(20px,4.6vw,30px);line-height:1.28;letter-spacing:0;max-width:780px;overflow-wrap:anywhere}
 .name{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35}
 .meta{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.45}
 .track b,.track small{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35}
@@ -713,12 +715,66 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:f
 .about-links{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px}
 .about-links a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border:1px solid var(--line);border-radius:13px;background:var(--surface2);color:var(--text);text-decoration:none;font-size:13px}
 .about-links a strong{font-size:13px;font-weight:750}
-@media(max-width:390px){.hero h2{font-size:clamp(27px,7vw,32px);line-height:1.22}.rowhead{align-items:flex-start}.sort{max-width:132px}.playerin{gap:7px}.cover{width:42px;height:42px;flex-basis:42px}.player button{width:42px;height:42px}}
+@media(max-width:390px){.hero h2{font-size:20px;line-height:1.3}.rowhead{align-items:flex-start}.sort{max-width:132px}.playerin{gap:7px}.cover{width:42px;height:42px;flex-basis:42px}.player button{width:42px;height:42px}}
+
+
+
+/* Small UI tidy: standard Settings icon + slimmer search field */
+.header #settings {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 14px;
+}
+.settings-symbol {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+.search {
+  height: 44px;
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: 13px;
+  box-shadow: none;
+}
+.search span { font-size: 19px; }
+#query { font-size: 13px; }
+@media (max-width: 390px) {
+  .search { height: 42px; min-height: 42px; padding: 0 12px; }
+}
+
+
+/* AIRWAVE TAMIL · FINISHING TOUCHES (icon weight + spacing only) */
+.header #settings svg {
+  width: 27px;
+  height: 27px;
+  stroke-width: 2.8;
+}
+
+/* A calmer, more even vertical rhythm across the main screen. */
+.hero { margin-bottom: 19px; }
+.controls { padding-top: 0; margin-bottom: 15px; }
+.nav { gap: 8px; margin: 14px 0 17px; }
+.rowhead { margin: 16px 1px 10px; gap: 12px; }
+.stationlist { gap: 10px; }
+.station { padding: 11px; gap: 11px; }
+
+@media (max-width: 650px) {
+  .hero { margin-bottom: 17px; }
+  .controls { padding-top: 0; margin-bottom: 14px; }
+  .nav { gap: 8px; margin: 13px 0 16px; }
+  .rowhead { margin: 15px 1px 10px; }
+  .stationlist { gap: 9px; }
+}
 
 </style></head>
 <body>
 <div class="app">
-<header class="header"><div class="brand"><div class="mark">〰</div><div><h1>Airwave<span style="color:var(--accent)">.</span></h1></div></div><div class="head-actions"><button class="iconbtn" id="settings" title="Settings"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.6v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.3v-2.6h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2H15v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button class="iconbtn" id="share" title="Share Airwave" aria-label="Share Airwave"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4"/></svg></button></div></header>
+<header class="header"><div class="brand"><div class="mark">〰</div><div><h1>Airwave<span style="color:var(--accent)">.</span></h1></div></div><div class="head-actions"><button class="iconbtn" id="settings" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.6v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.3v-2.6h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2H15v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button class="iconbtn" id="share" title="Share Airwave" aria-label="Share Airwave"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4"/></svg></button></div></header>
 <section class="hero"><h2 id="heroTitle">உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.</h2></section>
 <section class="controls">
 <label class="search"><span aria-hidden="true">⌕</span><input id="query" type="search" placeholder="தமிழ் வானொலிகளைத் தேடுங்கள்…" autocomplete="off" aria-label="தமிழ் வானொலிகளைத் தேடுங்கள்"></label>
@@ -745,7 +801,7 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:f
       <div class="setting"><div class="setting-copy"><label for="uilang" id="languageLabel">இடைமுக மொழி</label><small id="languageHint">பயன்பாட்டின் மொழியை மாற்றவும்</small></div><select id="uilang"><option value="ta">தமிழ்</option><option value="en">English</option></select></div>
     </section>
     <section class="settings-group"><h4 id="stationsHeading">வானொலிகள்</h4>
-      <div class="setting"><div class="setting-copy"><label id="catalogueLabel">வானொலி பட்டியல்</label><small id="catalogueHint">இந்த பதிப்பில் உள்ள வானொலிகள்</small></div><span class="setting-value" id="dbinfo">286 வானொலிகள்</span></div>
+      <div class="setting"><div class="setting-copy"><label id="catalogueLabel">வானொலி பட்டியல்</label><small id="catalogueHint">இந்த பதிப்பில் உள்ள வானொலிகள்</small></div><span class="setting-value" id="dbinfo">ஏற்றுகிறது…</span></div>
       <details class="hidden-settings"><summary><span class="setting-copy"><label id="hiddenLabel">மறைக்கப்பட்ட வானொலிகள்</label><small id="hiddenHint">மறைத்த வானொலிகளை மீட்டெடுக்கவும்</small></span><span class="setting-value" id="hiddenCount">0 மறைக்கப்பட்டவை</span><b class="disclosure">⌄</b></summary><div id="hiddenStationManager" class="hidden-station-manager"></div></details>
     </section>
     <section class="settings-group"><h4 id="backupHeading">காப்புப்பிரதி மற்றும் தரவு</h4>
@@ -967,6 +1023,36 @@ function stationKey(station) {
   return station.stationuuid || station.id || station.url_stream || station.streamUrl || "";
 }
 
+// Preserve saved favourites, recent stations and hidden stations when catalogue
+// entries have been consolidated under a new canonical station ID.
+function migrateCataloguePreferenceIds(catalogue) {
+  const idMap = new Map();
+  catalogue.forEach(station => {
+    const canonical = stationKey(station);
+    if (!canonical) return;
+    idMap.set(String(canonical), String(canonical));
+    (Array.isArray(station.sourceIds) ? station.sourceIds : []).forEach(oldId => {
+      if (oldId) idMap.set(String(oldId), String(canonical));
+    });
+  });
+  const migrate = values => [...new Set(values.map(value => idMap.get(String(value)) || value))];
+  const oldFavs = [...favs];
+  const oldRecent = [...recent];
+  const oldHidden = [...hiddenStationIds];
+  const newFavs = migrate(oldFavs);
+  const newRecent = migrate(oldRecent);
+  const newHidden = migrate(oldHidden);
+  const changed = JSON.stringify(oldFavs) !== JSON.stringify(newFavs)
+    || JSON.stringify(oldRecent) !== JSON.stringify(newRecent)
+    || JSON.stringify(oldHidden) !== JSON.stringify(newHidden);
+  if (changed) {
+    favs = new Set(newFavs);
+    recent = newRecent;
+    hiddenStationIds = new Set(newHidden);
+    savePreferences();
+  }
+}
+
 function stationStreamUrl(station) { return station?.url_stream || station?.streamUrl || ""; }
 function stationFavicon(station) { return station?.url_favicon || station?.favicon || ""; }
 function stationHomepage(station) { return station?.url_homepage || station?.homepage || ""; }
@@ -1114,7 +1200,8 @@ function applyFilters() {
     if (view === "favs" && !favs.has(id)) return false;
     if (view === "recent" && !recent.includes(id)) return false;
     if (!query) return true;
-    const searchable = [station.name || "", station.tags || "", countryName(station.iso_3166_1), station.iso_3166_1 || ""].join(" ").toLocaleLowerCase();
+    const aliases = Array.isArray(station.aliases) ? station.aliases : [];
+    const searchable = [station.name || "", ...aliases, station.tags || "", station.iso_639 || "", countryName(station.iso_3166_1), station.iso_3166_1 || ""].join(" ").toLocaleLowerCase();
     return searchable.includes(query);
   });
   if (view === "recent") {
@@ -1226,7 +1313,7 @@ async function startHlsStream(url,requestId){
 function playStation(station) {
   const streamUrl=stationStreamUrl(station);
   if(!isHttpUrl(streamUrl)){toast(t("invalidStream"));return;}
-  const requestId=++playRequestId;current=station;
+  const requestId=++playRequestId;current=station;document.body.classList.add("player-ready");
   $("trackname").textContent=station.name||t("unknownStation");$("trackstate").textContent=t("connecting");
   $("toggle").disabled=false;$("playerfav").disabled=false;$("playerfav").textContent=favs.has(stationKey(station))?"♥":"♡";
   updatePlayerArtwork(station);updateExpandedPlayer();
@@ -1635,6 +1722,7 @@ async function loadCatalogue() {
       iso_639:raw.iso_639||"ta"
     })).filter(station=>station&&station.stationuuid&&station.name&&isHttpUrl(station.url_stream));
     if(!stations.length)throw new Error("No usable Tamil radio stations in the catalogue");
+    migrateCataloguePreferenceIds(stations);
     sortedCatalogue=stations.slice().sort((a,b)=>stationCollator.compare(a.name||"",b.name||""));
     browsePreferencesReady=true;
     restoreBrowsePreferences();
