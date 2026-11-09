@@ -1,0 +1,30 @@
+{
+  "id": "./",
+  "name": "Airwave தமிழ்",
+  "short_name": "Airwave",
+  "description": "வானொலித்தளம். தமிழ் வானொலிகளை ஒரே இடத்தில் தேடுங்கள், கேளுங்கள்.",
+  "lang": "ta",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101913",
+  "theme_color": "#101913",
+  "categories": ["music", "entertainment"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

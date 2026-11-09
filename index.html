@@ -8,6 +8,18 @@ FILES
 
 The catalogue is fetched from ./tamil-stations.json. Keep both files in
 this same repository folder. Replace the JSON file to update the stations.
+
+PWA + SHARING FILES
+- manifest.webmanifest: install name, display mode, colours and app icons.
+- sw.js: same-origin app-shell and catalogue caching for offline browsing.
+- icon-192.png / icon-512.png: Android and Chromium install icons.
+- apple-touch-icon.png: iOS home-screen icon.
+- airwave-preview.jpg: Open Graph / social sharing preview (1200 × 630).
+
+MAINTENANCE
+- Keep all existing element IDs and data attributes; application logic uses them.
+- Bump CACHE_VERSION in sw.js whenever the app shell or cache policy changes.
+- Radio streams and broadcaster artwork remain external and are not cached.
 -->
 <!doctype html>
 <html lang="ta">
@@ -16,21 +28,30 @@ this same repository folder. Replace the JSON file to update the stations.
 <meta name="theme-color" content="#101913">
 <meta name="author" content="Prasanna">
 <meta name="description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் தேடுங்கள், கேளுங்கள். Airwave Tamil.">
+<meta name="application-name" content="Airwave">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="canonical" href="https://prasannaone.github.io/Airwave-Tamil/">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Airwave Tamil">
-<meta property="og:title" content="Airwave Tamil · உங்கள் அலைவரிசையைக் கண்டறியுங்கள்">
-<meta property="og:description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் தேடுங்கள், கேளுங்கள்.">
+<meta property="og:site_name" content="Airwave தமிழ்">
+<meta property="og:title" content="Airwave தமிழ்">
+<meta property="og:description" content="வானொலித்தளம்">
 <meta property="og:url" content="https://prasannaone.github.io/Airwave-Tamil/">
-<meta property="og:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.png">
+<meta property="og:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.jpg">
+<meta property="og:image:secure_url" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Airwave Tamil. உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.">
+<meta property="og:image:alt" content="Airwave தமிழ் · வானொலித்தளம்">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.png">
-<meta name="twitter:title" content="Airwave Tamil">
-<meta name="twitter:description" content="தமிழ் வானொலிகளை ஒரே இடத்தில் கேளுங்கள்.">
-<title>Airwave Tamil · தமிழ் வானொலி</title>
+<meta name="twitter:image" content="https://prasannaone.github.io/Airwave-Tamil/airwave-preview.jpg">
+<meta name="twitter:title" content="Airwave தமிழ்">
+<meta name="twitter:description" content="வானொலித்தளம்">
+<title>Airwave தமிழ் · தமிழ் வானொலி</title>
 <style>
 :root{color-scheme:dark;--bg:#0b0d14;--surface:#141a27;--surface2:#1c2434;--line:#29344a;--text:#f5f6fc;--muted:#9ba7bd;--accent:#a99bff;--mint:#70e4d0;--pink:#ff8eae;--shadow:0 15px 45px #0004}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -12%,#403675 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding-bottom:100px}
@@ -779,9 +800,9 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:f
 <section class="controls">
 <label class="search"><span aria-hidden="true">⌕</span><input id="query" type="search" placeholder="தமிழ் வானொலிகளைத் தேடுங்கள்…" autocomplete="off" aria-label="தமிழ் வானொலிகளைத் தேடுங்கள்"></label>
 </section>
-<nav class="nav" aria-label="வானொலி பார்வைகள்"><button class="active" data-view="all">ஆராயுங்கள்</button><button data-view="favs">♡ விருப்பமானவை</button><button data-view="recent">◷ சமீபத்தியவை</button><button id="surprise">✧ ஆச்சரியத் தேர்வு</button></nav>
+<nav class="nav" id="stationNav" aria-label="வானொலி பார்வைகள்"><button class="active" data-view="all">ஆராயுங்கள்</button><button data-view="favs">♡ விருப்பமானவை</button><button data-view="recent">◷ சமீபத்தியவை</button><button id="surprise">✧ ஆச்சரியத் தேர்வு</button></nav>
 <div class="rowhead"><div><h3 id="heading">தமிழ் வானொலிகள்</h3><small id="count">வானொலிகள் ஏற்றப்படுகின்றன…</small></div><select class="sort" id="sort" aria-label="வரிசை"><option value="name">பெயர்: A–Z</option><option value="reverse">பெயர்: Z–A</option><option value="random">கலக்கு</option></select></div>
-<div class="stationlist" id="list"><div class="empty" id="loadingState"><span class="loading-pulse">தமிழ் வானொலிகள் தயாராகின்றன…</span></div></div><button class="more" id="more" hidden>மேலும் காட்டு</button>
+<div class="stationlist" id="list"><div class="empty" id="loadingState"><span class="loading-pulse" id="loadingMessage">தமிழ் வானொலிகள் தயாராகின்றன…</span></div></div><button class="more" id="more" hidden>மேலும் காட்டு</button>
 </div>
 <div class="player" id="miniPlayer"><div class="playerin" id="miniPlayerOpen" role="button" tabindex="0" aria-label="Expand player"><div class="cover" id="miniCover">♫</div><div class="track"><b id="trackname">Nothing playing yet</b><small><span class="mini-eq" id="miniEq" aria-hidden="true"><i></i><i></i><i></i></span><span id="trackstate">Choose a station to start listening</span></small></div><button class="secondary" id="playerfav" disabled aria-label="Favourite station">♡</button><button id="toggle" disabled aria-label="Play or pause">▶</button></div><audio id="audio" preload="none"></audio></div>
 <div class="sheetbg" id="playerSheetBg"><section class="playersheet" id="playerSheet" role="dialog" aria-modal="true" aria-label="Now playing"><div class="sheethead"><span id="sheetNowPlayingLabel">NOW PLAYING</span><button class="sheetclose" id="playerSheetClose" aria-label="Close player">⌄</button></div><div class="sheetart" id="sheetArt">♫</div><h2 id="sheetStation">Nothing playing yet</h2><p id="sheetSubtitle">Choose a station to start listening</p><div class="livepill" id="livePill">● LIVE RADIO</div><div class="transport-row">
@@ -814,8 +835,8 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:f
     </section>
   </div>
   <div class="settings-footer">
-    <div class="footer-identity"><strong id="creatorText">உருவாக்கியவர்: பிரசன்னா <span>❤️</span></strong>
-      <div class="footer-contacts"><a href="https://t.me/prasannaone" target="_blank" rel="noopener" aria-label="டெலிகிராம் @prasannaone"><span class="contact-symbol">↗</span><span id="telegramFooterText">டெலிகிராம்</span></a></div>
+    <div class="footer-identity"><strong id="creatorText">பிரசன்னா ♥️✨</strong>
+      <div class="footer-contacts"><a href="https://t.me/prasannaone" target="_blank" rel="noopener" id="telegramFooterLink" aria-label="டெலிகிராம் @prasannaone"><span class="contact-symbol">↗</span><span id="telegramFooterText">டெலிகிராம்</span></a></div>
     </div>
     <button class="action" id="close">முடிந்தது</button>
   </div>
@@ -896,7 +917,7 @@ function safeStorageSet(key, value) {
 
 const AIRWAVE_TEXT = {
  ta: {
-  hero:"உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.", search:"தமிழ் வானொலிகளைத் தேடுங்கள்…",
+  hero:"உங்கள் அலைவரிசையைக் கண்டறியுங்கள்.", navLabel:"வானொலி பார்வைகள்", loadingMessage:"வானொலிகள் தயாராகின்றன…", dbLoading:"ஏற்றுகிறது…", footerContact:"டெலிகிராம் @prasannaone", search:"தமிழ் வானொலிகளைத் தேடுங்கள்…",
   settings:"அமைப்புகள்", share:"பகிர்", expand:"ஒலிப்பானை விரிவாக்கு", fav:"விருப்பமானது",
   explore:"ஆராயுங்கள்", favourites:"விருப்பமானவை", recent:"சமீபத்தியவை", surprise:"ஆச்சரியத் தேர்வு",
   headingAll:"தமிழ் வானொலிகள்", headingFavs:"விருப்பமான வானொலிகள்", headingRecent:"சமீபத்தில் கேட்டவை", headingHidden:"மறைக்கப்பட்ட வானொலிகள்",
@@ -908,7 +929,7 @@ const AIRWAVE_TEXT = {
   forest:"பசுமை", midnight:"நள்ளிரவு ஊதா", amoled:"AMOLED கருப்பு", ocean:"கடல் நீலம்", light:"ஒளிர்வு",
   stations:"வானொலிகள்", catalogue:"வானொலி பட்டியல்", catalogueHint:"இந்த பதிப்பில் உள்ள வானொலிகள்", hidden:"மறைக்கப்பட்ட வானொலிகள்", hiddenHint:"மறைத்த வானொலிகளை மீட்டெடுக்கவும்", hiddenCount:"{n} மறைக்கப்பட்டவை", hiddenEmpty:"மறைக்கப்பட்ட வானொலிகள் இல்லை.",
   backup:"காப்புப்பிரதி மற்றும் தரவு", importLabel:"காப்புப்பிரதியை இறக்குமதி", importHint:"சேமித்த விருப்பமான வானொலிகளை இணைக்கவும்", importButton:"இறக்குமதி", exportLabel:"காப்புப்பிரதியை ஏற்றுமதி", exportHint:"உங்கள் விருப்பமான வானொலிகளைச் சேமிக்கவும்", exportButton:"ஏற்றுமதி", clearLabel:"சேமித்த தரவை நீக்கு", clearHint:"விருப்பமானவை, மறைக்கப்பட்டவை மற்றும் வரலாற்றை நீக்கும்", clearButton:"நீக்கு", about:"பற்றி", aboutLabel:"Airwave Tamil பற்றி", aboutHint:"பயன்பாட்டின் அம்சங்கள் மற்றும் வழிகாட்டி", aboutButton:"வழிகாட்டி", done:"முடிந்தது",
-  creator:"உருவாக்கியவர்: பிரசன்னா", telegram:"டெலிகிராம்", repo:"Airwave Tamil திட்டக் களஞ்சியம்", aboutSubtitle:"தமிழ் வானொலிக்கான உங்கள் சிறிய இடம்.", aboutCopy:"தமிழ் வானொலிகளை ஒரே எளிய இடத்தில் தேடுங்கள், கேளுங்கள்.",
+  creator:"பிரசன்னா ♥️✨", telegram:"டெலிகிராம்", repo:"Airwave Tamil திட்டக் களஞ்சியம்", aboutSubtitle:"தமிழ் வானொலிக்கான உங்கள் சிறிய இடம்.", aboutCopy:"தமிழ் வானொலிகளை ஒரே எளிய இடத்தில் தேடுங்கள், கேளுங்கள்.",
   aboutStart:"தொடங்குவது எப்படி", aboutStartText:"வானொலிப் பட்டியலைப் பாருங்கள் அல்லது தேடலில் நிலையத்தின் பெயரை உள்ளிடுங்கள். கேட்க விரும்பும் நிலையத்தைத் தேர்ந்தெடுக்கவும். நீங்கள் உலாவும்போதும் சிறிய ஒலிப்பான் கீழே இருக்கும்.",
   aboutBrowse:"வானொலிகளைத் தேடுங்கள்", aboutSearch:"தேடல்: வானொலியின் பெயரை வைத்து தேடலாம்.", aboutSurprise:"ஆச்சரியத் தேர்வு: தற்போது காட்டப்படும் பட்டியலிலிருந்து ஒரு வானொலியைத் தேர்ந்தெடுக்கும்.", aboutSort:"வரிசை: பெயர் வரிசையையோ கலந்த வரிசையையோ தேர்ந்தெடுக்கலாம்.",
   aboutPersonal:"உங்கள் விருப்பப்படி", aboutFav:"விருப்பமானவை: இதயக் குறியைத் தொட்டு சேமிக்கவும்.", aboutHide:"மறை: தேவையில்லாத வானொலியை மறைத்து, அமைப்புகளில் மீட்டெடுக்கலாம்.", aboutRecent:"சமீபத்தியவை: முன்பு கேட்ட வானொலிகளை மீண்டும் திறக்கலாம்.", aboutPlayer:"ஒலிப்பான்: கீழே உள்ள பட்டையைத் தொட்டு விரிவாக்கவும். மேலே இழுத்து திறக்கவும்; கீழே இழுத்து மூடவும்.", aboutSleep:"தூக்க நேரம்: 5 முதல் 60 நிமிடங்களில் ஒலியை நிறுத்த அமைக்கலாம்.",
@@ -925,7 +946,7 @@ const AIRWAVE_TEXT = {
   backTop:"மேலே செல்லவும்", closePlayer:"ஒலிப்பானை மூடு", playStation:"வானொலியை இயக்கு", hideStation:"வானொலியை மறை", resetSearch:"தேடலை அழி", min:"நிமி", countUnit:"வானொலிகள்"
  },
  en: {
-  hero:"Find your frequency.", search:"Search Tamil radio stations…", settings:"Settings", share:"Share", expand:"Expand player", fav:"Favourite station",
+  hero:"Find your frequency.", navLabel:"Station views", loadingMessage:"Getting stations ready…", dbLoading:"Loading…", footerContact:"Telegram @prasannaone", search:"Search Tamil radio stations…", settings:"Settings", share:"Share", expand:"Expand player", fav:"Favourite station",
   explore:"Explore", favourites:"Favourites", recent:"Recent", surprise:"Surprise me", headingAll:"Tamil stations", headingFavs:"Your favourites", headingRecent:"Recently played", headingHidden:"Hidden stations",
   sortAZ:"Name: A–Z", sortZA:"Name: Z–A", sortShuffle:"Shuffle", count:"{n} stations", loadMore:"Load more",
   nothingPlaying:"Nothing playing yet", chooseStation:"Choose a station to start listening", nowPlaying:"NOW PLAYING", liveRadio:"Live radio", previous:"Previous", next:"Next", play:"Play", pause:"Pause", block:"Hide", restore:"Restore", favourite:"Favourite", favourited:"Favourited", removeFavourite:"Remove favourite",
@@ -933,7 +954,7 @@ const AIRWAVE_TEXT = {
   settingsSubtitle:"Make your radio experience yours.", personalise:"Personalise", appearance:"Appearance", appearanceHint:"Choose your colour theme", language:"Interface language", languageHint:"Change the app display language", forest:"Forest", midnight:"Midnight purple", amoled:"AMOLED black", ocean:"Ocean", light:"Light",
   stations:"Stations", catalogue:"Station catalogue", catalogueHint:"Stations available in this edition", hidden:"Hidden stations", hiddenHint:"Restore stations you've hidden", hiddenCount:"{n} hidden", hiddenEmpty:"No hidden stations.",
   backup:"Backup & data", importLabel:"Import backup", importHint:"Merge saved favourites from an Airwave JSON backup", importButton:"Import JSON", exportLabel:"Export backup", exportHint:"Save your favourites as a JSON backup", exportButton:"Export", clearLabel:"Clear saved data", clearHint:"Remove favourites, hidden stations and listening history", clearButton:"Clear", about:"About", aboutLabel:"About Airwave Tamil", aboutHint:"Project details and a quick usage guide", aboutButton:"View guide", done:"Done",
-  creator:"Made by Prasanna", telegram:"Telegram", repo:"Airwave Tamil GitHub repository", aboutSubtitle:"Your lil corner of Tamil radio.", aboutCopy:"Find and listen to Tamil radio stations in one simple listening space.",
+  creator:"Made by Prasanna ♥️", telegram:"Telegram", repo:"Airwave Tamil GitHub repository", aboutSubtitle:"Your corner of Tamil radio.", aboutCopy:"Discover and listen to Tamil radio stations in one place.",
   aboutStart:"Getting started", aboutStartText:"Browse the station list or search by station name. Choose a station to start listening. The mini-player stays available while you explore.",
   aboutBrowse:"Find stations", aboutSearch:"Search: Find stations by name.", aboutSurprise:"Surprise me: Pick a station from the currently displayed results.", aboutSort:"Sorting: Choose alphabetical or shuffled results.",
   aboutPersonal:"Make it yours", aboutFav:"Favourites: Tap the heart to save a station.", aboutHide:"Hide: Hide stations you don't want and restore them in Settings.", aboutRecent:"Recent: Return to stations you've listened to.", aboutPlayer:"Player: Tap the mini-player to expand it. Swipe up to open and down to close.", aboutSleep:"Sleep timer: Set playback to stop automatically after 5–60 minutes.",
@@ -970,17 +991,18 @@ function applyInterfaceLanguageCore(language, shouldRender=true) {
   safeStorageSet("airwave-tamil-language", ui);
   const set = (id,key) => { const node = $(id); if (node) node.textContent = t(key); };
   const attr = (id,name,key) => { const node=$(id); if(node) node.setAttribute(name,t(key)); };
-  set("heroTitle","hero"); set("settingsTitle","settings"); set("settingsSubtitle","settingsSubtitle");
+  set("heroTitle","hero"); set("loadingMessage","loadingMessage"); set("dbinfo","dbLoading"); set("settingsTitle","settings"); set("settingsSubtitle","settingsSubtitle");
   set("personaliseHeading","personalise"); set("themeLabel","appearance"); set("themeHint","appearanceHint"); set("languageLabel","language"); set("languageHint","languageHint");
   set("stationsHeading","stations"); set("catalogueLabel","catalogue"); set("catalogueHint","catalogueHint"); set("hiddenLabel","hidden"); set("hiddenHint","hiddenHint");
   set("backupHeading","backup"); set("importLabel","importLabel"); set("importHint","importHint"); set("import2","importButton"); set("exportLabel","exportLabel"); set("exportHint","exportHint"); set("export2","exportButton"); set("clearLabel","clearLabel"); set("clearHint","clearHint"); set("clear","clearButton");
   set("aboutHeading","about"); set("aboutLabel","aboutLabel"); set("aboutHint","aboutHint"); set("openAbout","aboutButton"); set("close","done");
-  set("creatorText","creator"); $("creatorText").innerHTML = `${t("creator")} <span>❤️</span>`; set("telegramFooterText","telegram");
+  set("creatorText","creator"); set("telegramFooterText","telegram");
   set("aboutTitle","aboutLabel"); set("aboutSubtitle","aboutSubtitle"); set("aboutCopy","aboutCopy"); set("aboutStartHeading","aboutStart"); set("aboutStartText","aboutStartText");
   set("aboutBrowseHeading","aboutBrowse"); set("aboutSearchText","aboutSearch"); set("aboutSurpriseText","aboutSurprise"); set("aboutSortText","aboutSort"); set("aboutPersonalHeading","aboutPersonal");
   set("aboutFavText","aboutFav"); set("aboutHideText","aboutHide"); set("aboutRecentText","aboutRecent"); set("aboutPlayerText","aboutPlayer"); set("aboutSleepText","aboutSleep");
   set("aboutBackupHeading","aboutBackup"); set("aboutBackupText","aboutBackupText"); set("aboutSourceHeading","aboutSource"); set("aboutSourceText","aboutSourceText"); set("aboutTelegramLabel","telegram"); set("aboutRepoLabel","repo"); set("aboutDone","done");
   set("query","search"); $("query").placeholder=t("search"); attr("query","aria-label","search");
+  attr("stationNav","aria-label","navLabel"); attr("sort","aria-label","sortAZ"); attr("telegramFooterLink","aria-label","footerContact");
   attr("settings","title","settings"); attr("settings","aria-label","settings"); attr("share","title","share"); attr("share","aria-label","share");
   attr("miniPlayerOpen","aria-label","expand"); attr("playerfav","aria-label","fav"); attr("playerSheet","aria-label","nowPlaying"); attr("playerSheetClose","aria-label","closePlayer");
   attr("sheetPrev","aria-label","previous"); attr("sheetPrev","title","previous"); attr("sheetNext","aria-label","next"); attr("sheetNext","title","next"); attr("sheetToggle","aria-label","play");
@@ -1002,7 +1024,7 @@ function applyInterfaceLanguageCore(language, shouldRender=true) {
   const themeLabels={midnight:t("midnight"),amoled:t("amoled"),ocean:t("ocean"),light:t("light"),forest:t("forest")};
   [...$("theme").options].forEach(option=>option.text=themeLabels[option.value]);
   $("uilang").value=ui; $("theme").value=safeStorageGet("airwave-tamil-theme","forest");
-  const currentTitle = document.querySelector("title"); if(currentTitle) currentTitle.textContent="Airwave Tamil · " + (ui==="ta"?"தமிழ் வானொலி":"Tamil Radio");
+  const currentTitle = document.querySelector("title"); if(currentTitle) currentTitle.textContent="Airwave " + (ui==="ta"?"தமிழ் · தமிழ் வானொலி":"Tamil · Tamil Radio");
   if (shouldRender && stations.length) { renderStations(); if(current) updateExpandedPlayer(); renderHiddenSettings(); }
   if(current){ $("trackstate").textContent=audio.error?t("streamUnavailable"):audio.paused?t("paused"):t("playing"); $("sheetToggle").querySelector(".action-label").textContent=audio.paused?t("play"):t("pause"); updateExpandedPlayer(); }
   if(!current){ $("trackname").textContent=t("nothingPlaying"); $("trackstate").textContent=t("chooseStation"); $("sheetStation").textContent=t("nothingPlaying"); $("sheetSubtitle").textContent=t("chooseStation"); $("livePill").textContent=t("liveRadio"); }
@@ -1171,7 +1193,7 @@ function applyTheme(theme) {
 function makeStationCard(station) {
   const card=document.createElement("article"); card.className="station";
   let logo; const favicon=stationFavicon(station);
-  if(favicon){logo=document.createElement("img");logo.className="logo";logo.alt="";logo.loading="lazy";logo.referrerPolicy="no-referrer";logo.src=favicon;logo.onerror=()=>{const fallback=document.createElement("div");fallback.className="logo";fallback.textContent="♫";logo.replaceWith(fallback);};}
+  if(favicon){logo=document.createElement("img");logo.className="logo";logo.alt="";logo.loading="lazy";logo.decoding="async";logo.referrerPolicy="no-referrer";logo.src=favicon;logo.onerror=()=>{const fallback=document.createElement("div");fallback.className="logo";fallback.textContent="♫";logo.replaceWith(fallback);};}
   else {logo=document.createElement("div");logo.className="logo";logo.textContent="♫";}
   const info=document.createElement("div");info.className="info";
   const name=document.createElement("div");name.className="name";name.textContent=station.name||t("unknownStation");
@@ -1665,7 +1687,7 @@ function renderHiddenSettings() {
   hidden.sort((a,b) => stationCollator.compare(a.name || "", b.name || ""));
   hidden.forEach((station) => {
     const row = document.createElement("div"); row.className = "hidden-row";
-    const name = document.createElement("span"); name.textContent = station.name || "Unnamed station";
+    const name = document.createElement("span"); name.textContent = station.name || t("unknownStation");
     const restore = document.createElement("button"); restore.type = "button"; restore.textContent = t("restore");
     restore.onclick = () => {
       const id = stationKey(station); hiddenStationIds.delete(id);
@@ -1754,5 +1776,16 @@ window.addEventListener("unhandledrejection", (event) => {
 applyInterfaceLanguageCore(ui, false);
 
 loadCatalogue();
+
+/* 10 · PROGRESSIVE WEB APP
+   The service worker caches only this app's own files and catalogue.
+   Cross-origin radio streams and station artwork always stay on the network.
+*/
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" })
+      .catch(error => console.warn("Airwave service worker registration failed:", error));
+  }, { once: true });
+}
 
 </script></body></html>
